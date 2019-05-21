@@ -169,6 +169,7 @@ def getData(n):
 		print("   Length of path: "+ str(d[1])+"\n")
 		print("===========================================\n")
 		i += 1
+	print("\n")
 	print(" MANHATTAN HEURISTIC:\n")
 	i = 1
 	for each in p:
@@ -182,6 +183,7 @@ def getData(n):
 		print("   Length of path: "+ str(d[1])+"\n")
 		print("===========================================\n")
 		i += 1
+	print("\n")
 	print(" max(MANHATTAN, MISSING TILE) HEURISTIC:\n")
 	i = 1
 	for each in p:
@@ -205,4 +207,4 @@ def getData(n):
 # print('/n/nrunnning a*search....\n')
 # astar_search(p)
 
-getData(5)
+getData(20)
