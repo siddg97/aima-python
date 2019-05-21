@@ -81,7 +81,7 @@ def h1(node):
 
 # 	MANHATTAN HEURISTIC Helper Functions
 def rowCoord(y):
-	return int((x-1)/3)
+	return int((y-1)/3)
 
 def colCoord(x):
 	if x % 3 != 0:
@@ -157,18 +157,45 @@ def getData(n):
 	p = listOfPuzzles(n)
 	# Data for MISSING TILE HEURISTICS
 	i = 1
-	print(" MISSING TILE:\n")
+	print(" MISSING TILE HEURISTIC:\n")
 	for each in p:
-   		start_time = time.time()
-   		d = My_astar_search(each,h1)
-   		elapsed_time = time.time() - start_time
-   		print("===========================================\n")
-   		print("For problem "+str(i)+" :\n")
-   		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
-   		print("   Nodes removed: " + str(d[0])+"\n")
-   		print("   Length of path: "+ str(d[1])+"\n")
-   		print("===========================================\n")
-   		i += 1
+		start_time = time.time()
+		d = My_astar_search(each,h1)
+		elapsed_time = time.time() - start_time
+		print("===========================================\n")
+		print("For problem "+str(i)+" :\n")
+		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		print("   Nodes removed: " + str(d[0])+"\n")
+		print("   Length of path: "+ str(d[1])+"\n")
+		print("===========================================\n")
+		i += 1
+	print(" MANHATTAN HEURISTIC:\n")
+	i = 1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h2)
+		elapsed_time = time.time() - start_time
+		print("===========================================\n")
+		print("For problem "+str(i)+" :\n")
+		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		print("   Nodes removed: " + str(d[0])+"\n")
+		print("   Length of path: "+ str(d[1])+"\n")
+		print("===========================================\n")
+		i += 1
+	print(" max(MANHATTAN, MISSING TILE) HEURISTIC:\n")
+	i = 1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h3)
+		elapsed_time = time.time() - start_time
+		print("===========================================\n")
+		print("For problem "+str(i)+" :\n")
+		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		print("   Nodes removed: " + str(d[0])+"\n")
+		print("   Length of path: "+ str(d[1])+"\n")
+		print("===========================================\n")
+		i += 1
+
 
    	
 
