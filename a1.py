@@ -132,7 +132,6 @@ def My_best_first_graph_search(problem, f):
 	explored = set()
 	#!!! MODIFICATION(1) BY SIDDHARTH GUPTA: Start
 	nodesRemoved = 0
-	length = 0
 	# MODIFICATION(1) BY SIDDHARTH GUPTA: End !!!
 	while frontier:
 		node = frontier.pop()
@@ -141,11 +140,10 @@ def My_best_first_graph_search(problem, f):
 # MODIFICATION(2) BY SIDDHARTH GUPTA: End !!!
 		if problem.goal_test(node.state):
 #!!! MODIFICATION(3) BY SIDDHARTH GUPTA: Start
-			return (nodesRemoved,length)
+			return (nodesRemoved,node.depth)
 # MODIFICATION(3) BY SIDDHARTH GUPTA: End !!!
 		explored.add(node.state)
 		for child in node.expand(problem):
-			length += 1
 			if child.state not in explored and child not in frontier:
 				frontier.append(child)
 			elif child in frontier:
@@ -180,8 +178,4 @@ def getData(n):
 # print('/n/nrunnning a*search....\n')
 # astar_search(p)
 
-s = (5,1,6,2,0,3,7,4,8)
-p = EightPuzzle(s)
-d = My_astar_search(p,h1)
-print("Nodes Removed: "+str(d[0])+"\n")
-print("Steps Taken: "+str(d[1])+"\n")
+getData(5)
