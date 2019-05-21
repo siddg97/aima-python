@@ -5,9 +5,9 @@
 | Problem Instance # | Missing Tile Heuristic | Manhattan Heuristic | max(Missing Tile, Manhattan) Heuristic |
 | --- | --- | --- | --- |
 | 1 | <ul><li> Time [s]: 216.91595221</li><li>Nodes removed: 32564</li><li>Length: 26</li></ul> |<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> |<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> |
-| 2 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
-| 3 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
-| 4 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
+| 2 | <ul><li> Time [s]: 0.7537744045257568 </li><li>Nodes removed: 1846</li><li>Length: 19</li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
+| 3 | <ul><li> Time [s]: 3.390345335006714</li><li>Nodes removed: 3988</li><li>Length: 21</li></ul>|<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
+| 4 | <ul><li> Time [s]: 31.796590566635132</li><li>Nodes removed: 12760</li><li>Length: 24</li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
 | 5 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
 | 6 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
 | 7 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
