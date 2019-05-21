@@ -4,7 +4,7 @@
 
 | Problem Instance # | Missing Tile Heuristic | Manhattan Heuristic | max(Missing Tile, Manhattan) Heuristic |
 | --- | --- | --- | --- |
-| 1 | <ul><li> Time [s]: 216.91595221</li><li>Nodes removed: 32564</li><li>Length: 26</li></ul> | | |
+| 1 | <ul><li> Time [s]: 216.91595221</li><li>Nodes removed: 32564</li><li>Length: 26</li></ul> |<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> |<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> |
 | 2 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
 | 3 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|<ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul> | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
 | 4 | <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>| <ul><li> Time [s]: </li><li>Nodes removed: </li><li>Length: </li></ul>|
