@@ -202,9 +202,121 @@ def getData(n):
    	
 
 
-# p = make_rand_8puzzle()
-# display(p.initial)
-# print('/n/nrunnning a*search....\n')
-# astar_search(p)
+# # p = make_rand_8puzzle()
+# # display(p.initial)
+# # print('/n/nrunnning a*search....\n')
+# # astar_search(p)
+# s = (5,1,6,2,0,3,7,4,8)
+# p = EightPuzzle(s)
+# d = My_astar_search(p,h1)
+# print(str(d[0])+" "+str(d[1]))
+# # getData(20)
 
-getData(20)
+
+
+# Q3
+
+class Ypuzzle(Problem):
+
+	# Constructor
+	def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
+		self.goal = goal
+		Problem.__init__(self, initial, goal)
+
+	# get blank tile index
+	def find_blank_square(self,state):
+		return state.index(0)
+
+	# get all possible actions for a given state
+	def actions(self,state):
+		potentialActions = []
+		blankIndex = self.getBlankIndex(state)
+
+		if blankIndex == 0:
+			potentialActions = ['DOWNX']
+		elif blankIndex == 1:
+			potentialActions = ['DOWN']
+		elif blankIndex == 8:
+			potentialActions = ['UPY']
+		elif blankIndex == 5:
+			potentialActions = ['UP','RIGHT']
+		elif blankIndex == 2:
+			potentialActions = ['UPY','DOWN','RIGHT']
+		elif blankIndex == 3:
+			potentialActions = ['DOWN','RIGHT','LEFT']
+		elif blankIndex == 4:
+			potentialActions = ['UP','DOWN','LEFT']
+		elif blankIndex == 6:
+			potentialActions = ['UP','DOWNX','LEFT','RIGHT']
+		else:
+			potentialActions = ['UP','LEFT']
+
+		return potentialActions
+
+	# check if solution is achieved
+	def goal_test(self, state):
+		return state == state.goal
+
+	# takes current state and action => returns applied action state
+	def result(self, state, action):
+		blank = self.find_blank_square(state)
+		nextState = list(state)
+
+		delta = {'LEFT':-1, 'RIGHT':1, 'UPY':-2, 'UP':-3, 'DOWN':3, 'DOWNX':2}
+		neighbor = blank + delta[action]
+		nextState[blank], nextState[neighbor] = nextState[neighbor], nextState[blank]
+		return tuple(nextState)
+	
+	# check if given state is solvable or not
+	def check_solvability(self, state):
+		blank = self.find_blank_square(state)
+		inversion = 0
+		for i in range(len(state)):
+			for j in range(i+1, len(state)):
+				if (state[i] > state[j]) and state[i] != 0 and state[j] != 0:
+					inversion += 1
+		if blank == 0 or blank == 8:
+			return inversion % 2 == 0
+		else:
+			return inversion % 2 == 1
+
+
+# makes an instance of the YPuzlle and gives it an initial solvable state.
+def make_rand_ypuzzle():
+	goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)	# this is our final goal to be achieved for every instance of this problem
+	while True:		# Keep generating random initial state till state is a solvable one
+		state = tuple(np.random.choice(range(9), 9, replace=False))	# get the random initial state
+		puzzle = Ypuzzle(state, goal)	# create an instance of the problem with the initial state and the end goal
+		if puzzle.check_solvability(puzzle.initial):
+			break
+	# puzzle = EightPuzzle((5,1,6,2,0,3,7,4,8),goal)
+	return puzzle
+
+# Prints the state of the Ypuzzle to the console
+def displayY(state):
+	r1 = ""
+	r2 = ""
+	r3 = ""
+	r4 = "  "
+
+	for i in range(len(state)):
+		num = str(state[i])
+		if i == 0:
+			r1 += num+"   "
+		elif i == 1:
+			r1 += num
+		elif i >= 2 and i <= 4:
+			r2 += num + " "
+		elif i >= 5 and i <= 7:
+			r3 += num + " "
+		else:
+			r4 += num
+
+	print(r1 + "\n" + r2 + "\n" + r3 + "\n" + r4)
+
+
+yp = make_rand_ypuzzle()
+displayY(yp.initial)
+
+
+
