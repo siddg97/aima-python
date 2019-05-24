@@ -1,31 +1,100 @@
-#+--------------------------------------------------------------------------------------------------------------------------------------+
-#| Assignment 1 : CMPT 310 - Summer 2019 - Toby Donaldson																				|
-#| Author: Siddharth Gupta - SFU ID: 301327469																							|
-#|																																		|
-#|	CITATIONS :-																														|
-#|		- aima-code/aima-python : Textbook code in python from Github [ https://github.com/aimacode/aima-python]						|
-#|		- python documentation : Genral usage and syntax for using python3 [ https://docs.python.org/3/ ]								|
-#|		- Course website for CMPT310 : To get notes on search methods and heuristics [ http://www.sfu.ca/~tjd/310summer2019/index.html ]|							|
-#+--------------------------------------------------------------------------------------------------------------------------------------+
+#+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+#| Assignment 1 : CMPT 310 - Summer 2019 - Toby Donaldson																																				|
+#| Author: Siddharth Gupta - SFU ID: 301327469																																							|
+#|																																																		|
+#| --> CITATIONS :-																																														|
+#|		- aima-code/aima-python : Textbook code in python from Github [ https://github.com/aimacode/aima-python]																						|
+#|		- python documentation : Genral usage and syntax for using python3 [ https://docs.python.org/3/ ]																								|
+#|		- Course website for CMPT310 : To get notes on search methods and heuristics [ http://www.sfu.ca/~tjd/310summer2019/index.html ]																|
+#|		- Python library "xlwt" : For making an Excel sheet using just python file [ https://xlwt.readthedocs.io/en/latest/index.html ]																	|
+#|		- Python library "numpy" : For getting random initial state for EightPuzzle problems																											|
+#|																																																		|
+#| --> USAGE :-																																															|
+#|		]=> Use the makeExcelSheet(n) function to create n instances of Eightpuzzle problems and n+10 instances of the Ypuzzle and then write the corresponding data in a excel file called "a1.xlsx" 	|
+#|		]=> Use the getData(n) function to print out data on console (for solving each of the n instances of the EightPuzzle problems)																	|
+#|		]=> Use the getYData(n) function to print out data on console (for solving each of the n instances of the Ypuzzle problems)																		|
+#|																																																		|
+#| --> DEFINITIONS (of HEURISTIC and OTHER functions) :-																																				|
+#|		(1) h1(node) = MISSING TILE HEURISTIC ---- for the EIGHTPUZZLE problem and YPUZZLE problem 																										|
+#|		(2) h2(node) = MANHATTAN HEURISTIC ---- for the EIGHTPUZZLE problem 																															|
+#|		(3) h3(node) = max(h1(node), h2(node)) ---- for the EIGHTPUZZLE problem 																														|
+#|		(4) h4(node) = MANHATTAN HEURISTIC ---- for the YPUZZLE problem 																																|
+#|		(5) h5(node) = max(MISSING TILE HEURISTIC, MANHATTAN HEURISTIC) ---- for the YPUZZLE problem 																									|
+#| 		(6) listOfPuzzles(n) = returns a list of n instances of the EIGHTPUZZLE problems 																												|
+#|		(7) listOfYPuzzles(n) = returns a list of n instances of the YPUZZLE problems 																													|
+#|		(8) make_rand_ypuzzle() = returns a random instance of a solvable Ypuzzle problem 																												|
+#|		(9) displayY(state) = prints a nicely formatted message of the Ypuzzle of the given state 																										|
+#|		(10) My_astar_search(problem,h) = my own version of astar_search(problem,h) as in search.py with modifications to get appropiate data 															|
+#|		(11) My-best_fit_graph_search(problem,f) = my own version of best_fit_graph_search(problem,f) as in search.py with modifications to get appropiate data 										|
+#+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-#	a1.py
+#	a1.py -- START
 
 from search import *
-import numpy as np    	# used in aima-code/aima-python as a library
+import numpy as np    	# module used in aima-code/aima-python as a library
 import time   		  	# importing time for timing heuristics
-import random			# for generating random integers
-import xlwt				# for generating outputs in the excel file directly from executing a1.py
+import random			# module for generating random integers
+import xlwt				# module for generating outputs in the excel file directly from executing a1.py
 wb = xlwt.Workbook()	# create a workbook from the xlwt module
 
+# STYLES for the data in the excel file
 style = xlwt.easyxf('font: bold 1;')
 headstyle = xlwt.easyxf('font: bold 1, color red;')
 qstyle = xlwt.easyxf('font: bold 1, color blue;')
-# sheet.write(2,0,'MISSING TILE HEURISTIC')
-# sheet.write(0,0,'Q2: EightPuzzle Problem Statistics')
-# sheet.write(4,0,'Problem Number')
-# sheet.write(4,1,'Time Taken to complete')
-# sheet.write(4,2,'Number of Nodes Removed')
-# sheet.write(4,3,'Length of Solution Path')
+
+
+
+# USED THESE FUNCTIONS TO GENERATE DATA FOR THE ALGORITHMS. THEY ARE MODIFIED VERSIONS OF astar_search() and best_fit_graph_search() from search.py
+#		MODIFICATION ARE MARKED as the code marked b/w the "# !!! MODIFICATION(n) BY SIDDHARTH GUPTA: Start" and the "# MODIFICATION(n) BY SIDDHARTH GUPTA: End !!!" where n is the nth modification
+
+
+# modified the original astar_search() function in search.py file -- !!! USE THIS INSTEAD OF THE search.py version !!!
+def My_astar_search(problem, h=None):
+	"""A* search is best-first graph search with f(n) = g(n)+h(n).
+	You need to specify the h function when you call astar_search, or
+	else in your Problem subclass."""
+	h = memoize(h or problem.h, 'h')
+	return My_best_first_graph_search(problem, lambda n: n.path_cost + h(n))
+
+# modified the original best_fit_graph_search() function in search.py file -- !!! USE THIS INSTEAD OF THE search.py version !!!
+def My_best_first_graph_search(problem, f):	
+	# Modification made:
+	#	recordes the number of nodes removed and the length of the solution and returns a tuple of the form ( nodesRemoved, length)
+	f = memoize(f, 'f')
+	node = Node(problem.initial)
+	frontier = PriorityQueue('min', f)
+	frontier.append(node)
+	explored = set()
+	#!!! MODIFICATION(1) BY SIDDHARTH GUPTA: Start
+	nodesRemoved = 0
+	# MODIFICATION(1) BY SIDDHARTH GUPTA: End !!!
+	while frontier:
+		node = frontier.pop()
+		#!!! MODIFICATION(2) BY SIDDHARTH GUPTA: Start
+		nodesRemoved += 1
+		# MODIFICATION(2) BY SIDDHARTH GUPTA: End !!!
+		if problem.goal_test(node.state):
+		#!!! MODIFICATION(3) BY SIDDHARTH GUPTA: Start
+			return (node,nodesRemoved,node.depth)
+		# MODIFICATION(3) BY SIDDHARTH GUPTA: End !!!
+		explored.add(node.state)
+		for child in node.expand(problem):
+			if child.state not in explored and child not in frontier:
+				frontier.append(child)
+			elif child in frontier:
+				if f(child) < frontier[child]:
+					del frontier[child]
+					frontier.append(child)
+	return None
+
+# Creates n instances of the 8puzzle then returns a tuple of them.
+def listOfPuzzles(n):
+	p = []
+	for i in range(n):	# loop creates an instance of a puzzle and runs from i=0 to i=(n-1)
+		instance = make_rand_8puzzle()
+		p.append(instance) # add instance to tuple
+	return p
+
 
 #+----------------------------------------------------------------------------------------------------------------------------------------------+
 #| Q1 - Made 2 helper functions:																												|
@@ -65,6 +134,9 @@ def display(state):
 			else:				# add the number
 				row3 += str(state[i]) + " "
 	print(row1 + "\n" + row2 + "\n" + row3 + "\n")
+
+
+
 
 #+----------------------------------------------------------------------------------------------------------------------------------+
 #| Q2 -	Created 20 instances of the 8puzzle problem and used the tree algorithms used to solve them and recorded the following data	| 
@@ -112,56 +184,7 @@ def h2(node):
 def h3(node):
 	return max(h1(node),h2(node))
 
-# Creates n instances of the 8puzzle then returns a tuple of them.
-def listOfPuzzles(n):
-	p = []
-	for i in range(n):	# loop creates an instance of a puzzle and runs from i=0 to i=(n-1)
-		instance = make_rand_8puzzle()
-		p.append(instance) # add instance to tuple
-	return p
 
-# USED THESE FUNCTIONS TO GENERATE DATA FOR THE ALGORITHMS. THEY ARE MODIFIED VERSIONS OF astar_search() and best_fit_graph_search() from search.py
-#		MODIFICATION ARE MARKED as the code marked b/w the "# !!! MODIFICATION(n) BY SIDDHARTH GUPTA: Start" and the "# MODIFICATION(n) BY SIDDHARTH GUPTA: End !!!" where n is the nth modification
-
-
-# modified the original astar_search() function in search.py file -- !!! USE THIS INSTEAD OF THE search.py version !!!
-def My_astar_search(problem, h=None):
-	"""A* search is best-first graph search with f(n) = g(n)+h(n).
-	You need to specify the h function when you call astar_search, or
-	else in your Problem subclass."""
-	h = memoize(h or problem.h, 'h')
-	return My_best_first_graph_search(problem, lambda n: n.path_cost + h(n))
-
-# modified the original best_fit_graph_search() function in search.py file -- !!! USE THIS INSTEAD OF THE search.py version !!!
-def My_best_first_graph_search(problem, f):	
-	# Modification made:
-	#	recordes the number of nodes removed and the length of the solution and returns a tuple of the form ( nodesRemoved, length)
-	f = memoize(f, 'f')
-	node = Node(problem.initial)
-	frontier = PriorityQueue('min', f)
-	frontier.append(node)
-	explored = set()
-	#!!! MODIFICATION(1) BY SIDDHARTH GUPTA: Start
-	nodesRemoved = 0
-	# MODIFICATION(1) BY SIDDHARTH GUPTA: End !!!
-	while frontier:
-		node = frontier.pop()
-		#!!! MODIFICATION(2) BY SIDDHARTH GUPTA: Start
-		nodesRemoved += 1
-		# MODIFICATION(2) BY SIDDHARTH GUPTA: End !!!
-		if problem.goal_test(node.state):
-		#!!! MODIFICATION(3) BY SIDDHARTH GUPTA: Start
-			return (node,nodesRemoved,node.depth)
-		# MODIFICATION(3) BY SIDDHARTH GUPTA: End !!!
-		explored.add(node.state)
-		for child in node.expand(problem):
-			if child.state not in explored and child not in frontier:
-				frontier.append(child)
-			elif child in frontier:
-				if f(child) < frontier[child]:
-					del frontier[child]
-					frontier.append(child)
-	return None
 
 # prints data for each of the n instances of the 8puzzle.
 def getData(n):
@@ -178,7 +201,6 @@ def getData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		display(d[0].state)
 		print("===========================================\n")
 		i += 1
 	print("\n")
@@ -193,7 +215,6 @@ def getData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		display(d[0].state)
 		print("===========================================\n")
 		i += 1
 	print("\n")
@@ -208,22 +229,22 @@ def getData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		display(d[0].state)
 		print("===========================================\n")
 		i += 1
+
+
 
 
 #+----------------------------------------------------------------------------------------------------------------------------------+
 #| Q3 -	Created 20 instances of the ypuzzle problem and used the three algorithms used to solve them and recorded the following data| 
 #|			- Algorithms used are :																									|
 #|				(1) astar_search() using the h1() function [ h1() function is the misplaced tile heuristic ]						|
-#|				(2) astar_search() using the h2() function [ h2() function is the Manhattan distance heuristic ]					|
-#|				(3) astar_search() using the h3() function [ h3() function is simply the max(h1(),h2()) heuristic ]					|
+#|				(2) astar_search() using the h4() function [ h4() function is the Manhattan distance heuristic ]					|
+#|				(3) astar_search() using the h5() function [ h5() function is simply the max(h1(),h4()) heuristic ]					|
 #|			- Data recorded for every algortithm listed above:																		|
 #|				i.   Total running time [ seconds ]																					|
 #|				ii.  Length of solution [ path length of reaching from the root node to the gol node ]								|
 #|				iii. Number of nodes removed from frontier 																			|
-#|				iv.  Final state of goal node 																						|
 #| 																																	|
 #| *****Each algorithm was run on the exact same set of problems to make the comparision unbiassed*****								|
 #+----------------------------------------------------------------------------------------------------------------------------------+
@@ -278,20 +299,6 @@ class Ypuzzle(Problem):
 		neighbor = blank + delta[action]
 		nextState[blank], nextState[neighbor] = nextState[neighbor], nextState[blank]
 		return tuple(nextState)
-		
-
-# makes an instance of the YPuzlle and gives it an initial solvable state.
-def make_rand_ypuzzle():
-	goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)	# this is our final goal to be achieved for every instance of this problem
-	state = (1,2,3,4,5,6,0,8,7)			# a solvable state
-	yp = Ypuzzle(state)
-	randomNumberOfMoves = random.randint(0,100000) # perform 100000 random moves to a solvable state to get an initial state that is guaranteed to be solvable
-	for i in range(randomNumberOfMoves):
-		actions = yp.actions(yp.initial)
-		actionNumber = random.randint(0,len(actions)-1)
-		nState = yp.result(yp.initial,actions[actionNumber])
-		yp = Ypuzzle(nState)
-	return yp
 
 
 # MANHATTAN HEURISTIC: Implemented for Ypuzzle with a 4x3 grid with (0,1), (3,0) and (3,2) are not being used.
@@ -308,6 +315,7 @@ def h4(node):
 			mDistance += abs(goalIndex[i][j] - stateIndex[i][j])
 	return mDistance
 
+
 # YPUZZLE max(missing tile, manhattan)
 def h5(node):
 	return max(h1(node),h4(node))
@@ -315,8 +323,7 @@ def h5(node):
 
 # HELPER FUNCTIONS FOR Ypuzzle 
 
-
-# Prints the state of the Ypuzzle to the console
+	# Prints the state of the Ypuzzle to the console
 def displayY(state):
 	r1 = ""
 	r2 = ""
@@ -339,7 +346,21 @@ def displayY(state):
 	print(r1 + "\n" + r2 + "\n" + r3 + "\n" + r4)
 
 
-# Creates n instances of the Ypuzzle then returns a tuple of them.
+	# makes an instance of the YPuzlle and gives it an initial solvable state.
+def make_rand_ypuzzle():
+	goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)	# this is our final goal to be achieved for every instance of this problem
+	state = (1,2,3,4,5,6,0,8,7)			# a solvable state
+	yp = Ypuzzle(state)
+	randomNumberOfMoves = random.randint(0,100000) # perform 100000 random moves to a solvable state to get an initial state that is guaranteed to be solvable
+	for i in range(randomNumberOfMoves):
+		actions = yp.actions(yp.initial)
+		actionNumber = random.randint(0,len(actions)-1)
+		nState = yp.result(yp.initial,actions[actionNumber])
+		yp = Ypuzzle(nState)
+	return yp
+
+
+	# Creates n instances of the Ypuzzle then returns a tuple of them.
 def listOfYPuzzles(n):
 	p = []
 	for i in range(n):	# loop creates an instance of a puzzle and runs from i=0 to i=(n-1)
@@ -347,7 +368,7 @@ def listOfYPuzzles(n):
 		p.append(instance) # add instance to tuple
 	return p
 
-# prints data for each of the n instances of the Ypuzzle on the console
+	# prints data for each of the n instances of the Ypuzzle on the console
 def getYData(n):
 	p = listOfYPuzzles(n)
 	# Data for MISSING TILE HEURISTICS
@@ -362,7 +383,6 @@ def getYData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		displayY(d[0].state)
 		print("===========================================\n")
 		i += 1
 	print("\n")
@@ -377,7 +397,6 @@ def getYData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		displayY(d[0].state)
 		print("===========================================\n")
 		i += 1
 	print("\n")
@@ -392,12 +411,11 @@ def getYData(n):
 		print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
 		print("   Nodes removed: " + str(d[1])+"\n")
 		print("   Length of path: "+ str(d[2])+"\n")
-		displayY(d[0].state)
 		print("===========================================\n")
 		i += 1	
 
 
-
+# generates a raw Excel sheet in the same directory as a1.py with data for n instances of EightPuzzle and n+10 of Ypuzzle
 def makeExcelSheet(n):
 	sheet = wb.add_sheet("CMPT310_Assignment_1")
 	print('!!!!!	Starting to generate a1.xlsx file 	!!!!!\n')
@@ -422,7 +440,7 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for MISSING TILE HEURISTIC for the EightPuzzle Problem!')
+	print('	Wrote data for MISSING TILE HEURISTIC for the EightPuzzle Problem!\n')
 	print('	Recording data for MANHATTAN HEURISTIC for the EightPuzzle Problem........')
 	# Data for MANHATTAN HEURISTIC
 	sIndex +=2
@@ -444,7 +462,7 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for MANHATTAN HEURISTIC for the EightPuzzle Problem!')
+	print('	Wrote data for MANHATTAN HEURISTIC for the EightPuzzle Problem!\n')
 	print('	Recording data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem........')
 	i = 1
 	sIndex +=2
@@ -465,7 +483,7 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem!')
+	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem!\n')
 
 	sIndex +=3
 	sheet.write(sIndex,0,'Q3: YPuzzle Problem Statistics',qstyle)
@@ -491,7 +509,7 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for MISSING TILE HEURISTIC for the YPuzzle Problem!')
+	print('	Wrote data for MISSING TILE HEURISTIC for the YPuzzle Problem!\n')
 	print('	Recording data for MANHATTAN HEURISTIC for the YPuzzle Problem........')
 	# Data for MANHATTAN HEURISTIC
 	sIndex +=2
@@ -513,7 +531,7 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for MANHATTAN HEURISTIC for the YPuzzle Problem!')
+	print('	Wrote data for MANHATTAN HEURISTIC for the YPuzzle Problem!\n')
 	print('	Recording data for max(MANHATTAN, MISSING TILE) HEURISTIC for the YPuzzle Problem........')
 	i = 1
 	sIndex +=2
@@ -534,12 +552,15 @@ def makeExcelSheet(n):
 		sheet.write(sIndex,3,d[2])				# print("   Length of path: "+ str(d[2])+"\n")
 		sIndex += 1
 		i += 1
-	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the YPuzzle Problem!')
-	wb.save("a1.xlsx")
-	print('!!!!!	EXCEL DATA WRITTEN FOR Q2	!!!!!\n')
+	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the YPuzzle Problem!\n')
+	wb.save("a1.xls")
+	print('!!!!!	EXCEL DATA WRITTEN FOR ASSIGNMENT 1 	!!!\n')
 
 
 
+# CALLS FOR CHECKING THE DATA (Uncomment and Comment as needed)
+makeExcelSheet(20)
+getData(20)
+getYData(30)
 
-makeExcelSheet(2)
-
+#	a1.py -- END
