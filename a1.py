@@ -17,6 +17,15 @@ import random			# for generating random integers
 import xlwt				# for generating outputs in the excel file directly from executing a1.py
 wb = xlwt.Workbook()	# create a workbook from the xlwt module
 
+style = xlwt.easyxf('font: bold 1;')
+headstyle = xlwt.easyxf('font: bold 1, color red;')
+# sheet.write(2,0,'MISSING TILE HEURISTIC')
+# sheet.write(0,0,'Q2: EightPuzzle Problem Statistics')
+# sheet.write(4,0,'Problem Number')
+# sheet.write(4,1,'Time Taken to complete')
+# sheet.write(4,2,'Number of Nodes Removed')
+# sheet.write(4,3,'Length of Solution Path')
+
 #+----------------------------------------------------------------------------------------------------------------------------------------------+
 #| Q1 - Made 2 helper functions:																												|
 #| 			(i)  make_rand_8puzzle() 	- returns an instance of the EightPuzzle class object with a random initial state that is solvable		|
@@ -285,22 +294,22 @@ def make_rand_ypuzzle():
 
 
 # MANHATTAN HEURISTIC: Implemented for Ypuzzle with a 4x3 grid with (0,1), (3,0) and (3,2) are not being used.
-	def h4(node):
-		state = node.state
-		goalIndex = {0:[2,2], 1:[0,0], 2:[4,0], 3:[1,0], 4:[2,0], 5:[3,0], 6:[1,1], 7:[2,1], 8:[3,1]}
-		stateIndex = {}
-		index = [[0,0], [4,0], [1,0], [2,0], [3,0], [1,1], [2,1], [3,1], [2,2]]
-		for i in range(len(state)):
-			stateIndex[state[i]] = index[i]
-		mDistance = 0
-		for i in range(1,9):
-			for j in range(2):
-				mDistance += abs(goalIndex[i][j] - stateIndex[i][j])
-		return mDistance
+def h4(node):
+	state = node.state
+	goalIndex = {0:[2,2], 1:[0,0], 2:[4,0], 3:[1,0], 4:[2,0], 5:[3,0], 6:[1,1], 7:[2,1], 8:[3,1]}
+	stateIndex = {}
+	index = [[0,0], [4,0], [1,0], [2,0], [3,0], [1,1], [2,1], [3,1], [2,2]]
+	for i in range(len(state)):
+		stateIndex[state[i]] = index[i]
+	mDistance = 0
+	for i in range(1,9):
+		for j in range(2):
+			mDistance += abs(goalIndex[i][j] - stateIndex[i][j])
+	return mDistance
 
 # YPUZZLE max(missing tile, manhattan)
-	def h5(node):
-		return max(h1(node),h4(node))
+def h5(node):
+	return max(h1(node),h4(node))
 
 
 # HELPER FUNCTIONS FOR Ypuzzle 
@@ -360,7 +369,7 @@ def getYData(n):
 	i = 1
 	for each in p:
 		start_time = time.time()
-		d = My_astar_search(each)
+		d = My_astar_search(each,h4)
 		elapsed_time = time.time() - start_time
 		print("===========================================\n")
 		print("For problem "+str(i)+" :\n")
@@ -386,9 +395,79 @@ def getYData(n):
 		print("===========================================\n")
 		i += 1	
 
-getYData(5)
 
 
+def makeExcelSheet(n):
+	sheet = wb.add_sheet("CMPT310_Assignment_1")
+	print('Starting to generate a1.xlsx file..........\n')
+	sheet.write(2,0,'MISSING TILE HEURISTIC',headstyle)
+	sheet.write(0,0,'Q2: EightPuzzle Problem Statistics')
+	sheet.write(4,0,'Problem Number')
+	sheet.write(4,1,'Time Taken to complete',style)
+	sheet.write(4,2,'Number of Nodes Removed',style)
+	sheet.write(4,3,'Length of Solution Path',style)
+	p = listOfPuzzles(n)
+	print('	Recording data for MISSING TILE HEURISTIC for the EightPuzzle Problem........')
+	# Data for MISSING TILE HEURISTICS
+	i = 1
+	sIndex = 5
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h1)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for MISSING TILE HEURISTIC for the EightPuzzle Problem!')
+	print('	Recording data for MANHATTAN HEURISTIC for the EightPuzzle Problem........')
+	# Data for MANHATTAN HEURISTIC
+	sIndex +=2
+	sheet.write(sIndex,0,'MANHATTAN HEURISTIC',headstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'Problem Number',style)
+	sheet.write(sIndex,1,'Time Taken to complete',style)
+	sheet.write(sIndex,2,'Number of Nodes Removed',style)
+	sheet.write(sIndex,3,'Length of Solution Path',style)
+	i = 1
+	sIndex += 1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h2)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for MANHATTAN HEURISTIC for the EightPuzzle Problem!')
+	print('	Recording data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem........')
+	i = 1
+	sIndex +=2
+	sheet.write(sIndex,0,'max(MANHATTAN, MISSING TILE) HEURISTIC',headstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'Problem Number',style)
+	sheet.write(sIndex,1,'Time Taken to complete',style)
+	sheet.write(sIndex,2,'Number of Nodes Removed',style)
+	sheet.write(sIndex,3,'Length of Solution Path',style)
+	sIndex +=1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h3)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem!')
+	wb.save("a1.xlsx")
+	print('!!!!!	EXCEL DATA WRITTEN FOR Q2	!!!!!\n')
 
 
+makeExcelSheet(10)
 
