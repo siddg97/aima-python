@@ -25,7 +25,10 @@
 #|		(8) make_rand_ypuzzle() = returns a random instance of a solvable Ypuzzle problem 																												|
 #|		(9) displayY(state) = prints a nicely formatted message of the Ypuzzle of the given state 																										|
 #|		(10) My_astar_search(problem,h) = my own version of astar_search(problem,h) as in search.py with modifications to get appropiate data 															|
-#|		(11) My-best_first_graph_search(problem,f) = my own version of best_first_graph_search(problem,f) as in search.py with modifications to get appropiate data 										|
+#|		(11) My-best_first_graph_search(problem,f) = my own version of best_first_graph_search(problem,f) as in search.py with modifications to get appropiate data 									|
+#|																																																		|
+#|																																																		|
+#| !!!!!!!!!!!!!!!!!!!	I generated my raw data using the makeExcelSheet() function and then added my own changes to it.	!!!!!!!!!!!!!!!!!!!															|
 #+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 #	a1.py -- START
@@ -560,7 +563,7 @@ def makeExcelSheet(n):
 
 # CALLS FOR CHECKING THE DATA (Uncomment and Comment as needed)
 makeExcelSheet(20)
-getData(20)
-getYData(30)
+# getData(20)
+# getYData(30)
 
 #	a1.py -- END
