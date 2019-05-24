@@ -15,7 +15,7 @@ import numpy as np    	# used in aima-code/aima-python as a library
 import time   		  	# importing time for timing heuristics
 import random			# for generating random integers
 import xlwt				# for generating outputs in the excel file directly from executing a1.py
-wb = xlwt.Workbook()
+wb = xlwt.Workbook()	# create a workbook from the xlwt module
 
 #+----------------------------------------------------------------------------------------------------------------------------------------------+
 #| Q1 - Made 2 helper functions:																												|
@@ -268,20 +268,6 @@ class Ypuzzle(Problem):
 		neighbor = blank + delta[action]
 		nextState[blank], nextState[neighbor] = nextState[neighbor], nextState[blank]
 		return tuple(nextState)
-	
-	# MANHATTAN HEURISTIC: Implemented for Ypuzzle with a 4x3 grid with (0,1), (3,0) and (3,2) are not being used.
-	def h(self, node):
-		state = node.state
-		goalIndex = {0:[2,2], 1:[0,0], 2:[4,0], 3:[1,0], 4:[2,0], 5:[3,0], 6:[1,1], 7:[2,1], 8:[3,1]}
-		stateIndex = {}
-		index = [[0,0], [4,0], [1,0], [2,0], [3,0], [1,1], [2,1], [3,1], [2,2]]
-		for i in range(len(state)):
-			stateIndex[state[i]] = index[i]
-		mDistance = 0
-		for i in range(1,9):
-			for j in range(2):
-				mDistance += abs(goalIndex[i][j] - stateIndex[i][j])
-		return mDistance
 		
 
 # makes an instance of the YPuzlle and gives it an initial solvable state.
@@ -296,6 +282,26 @@ def make_rand_ypuzzle():
 		nState = yp.result(yp.initial,actions[actionNumber])
 		yp = Ypuzzle(nState)
 	return yp
+
+
+# MANHATTAN HEURISTIC: Implemented for Ypuzzle with a 4x3 grid with (0,1), (3,0) and (3,2) are not being used.
+	def h4(node):
+		state = node.state
+		goalIndex = {0:[2,2], 1:[0,0], 2:[4,0], 3:[1,0], 4:[2,0], 5:[3,0], 6:[1,1], 7:[2,1], 8:[3,1]}
+		stateIndex = {}
+		index = [[0,0], [4,0], [1,0], [2,0], [3,0], [1,1], [2,1], [3,1], [2,2]]
+		for i in range(len(state)):
+			stateIndex[state[i]] = index[i]
+		mDistance = 0
+		for i in range(1,9):
+			for j in range(2):
+				mDistance += abs(goalIndex[i][j] - stateIndex[i][j])
+		return mDistance
+
+# YPUZZLE max(missing tile, manhattan)
+	def h5(node):
+		return max(h1(node),h4(node))
+
 
 # HELPER FUNCTIONS FOR Ypuzzle 
 
@@ -369,7 +375,7 @@ def getYData(n):
 	i = 1
 	for each in p:
 		start_time = time.time()
-		d = My_astar_search(each,h3)
+		d = My_astar_search(each,h5)
 		elapsed_time = time.time() - start_time
 		print("===========================================\n")
 		print("For problem "+str(i)+" :\n")
