@@ -25,7 +25,7 @@
 #|		(8) make_rand_ypuzzle() = returns a random instance of a solvable Ypuzzle problem 																												|
 #|		(9) displayY(state) = prints a nicely formatted message of the Ypuzzle of the given state 																										|
 #|		(10) My_astar_search(problem,h) = my own version of astar_search(problem,h) as in search.py with modifications to get appropiate data 															|
-#|		(11) My-best_fit_graph_search(problem,f) = my own version of best_fit_graph_search(problem,f) as in search.py with modifications to get appropiate data 										|
+#|		(11) My-best_first_graph_search(problem,f) = my own version of best_first_graph_search(problem,f) as in search.py with modifications to get appropiate data 										|
 #+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 #	a1.py -- START
