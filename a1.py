@@ -19,6 +19,7 @@ wb = xlwt.Workbook()	# create a workbook from the xlwt module
 
 style = xlwt.easyxf('font: bold 1;')
 headstyle = xlwt.easyxf('font: bold 1, color red;')
+qstyle = xlwt.easyxf('font: bold 1, color blue;')
 # sheet.write(2,0,'MISSING TILE HEURISTIC')
 # sheet.write(0,0,'Q2: EightPuzzle Problem Statistics')
 # sheet.write(4,0,'Problem Number')
@@ -399,9 +400,9 @@ def getYData(n):
 
 def makeExcelSheet(n):
 	sheet = wb.add_sheet("CMPT310_Assignment_1")
-	print('Starting to generate a1.xlsx file..........\n')
+	print('!!!!!	Starting to generate a1.xlsx file 	!!!!!\n')
 	sheet.write(2,0,'MISSING TILE HEURISTIC',headstyle)
-	sheet.write(0,0,'Q2: EightPuzzle Problem Statistics')
+	sheet.write(0,0,'Q2: EightPuzzle Problem Statistics',qstyle)
 	sheet.write(4,0,'Problem Number')
 	sheet.write(4,1,'Time Taken to complete',style)
 	sheet.write(4,2,'Number of Nodes Removed',style)
@@ -465,9 +466,80 @@ def makeExcelSheet(n):
 		sIndex += 1
 		i += 1
 	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the EightPuzzle Problem!')
+
+	sIndex +=3
+	sheet.write(sIndex,0,'Q3: YPuzzle Problem Statistics',qstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'MISSING TILE HEURISTIC',headstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'Problem Number')
+	sheet.write(sIndex,1,'Time Taken to complete',style)
+	sheet.write(sIndex,2,'Number of Nodes Removed',style)
+	sheet.write(sIndex,3,'Length of Solution Path',style)
+	p = listOfYPuzzles(n+10)
+	print('	Recording data for MISSING TILE HEURISTIC for the YPuzzle Problem........')
+	# Data for MISSING TILE HEURISTICS
+	i = 1
+	sIndex +=1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h1)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for MISSING TILE HEURISTIC for the YPuzzle Problem!')
+	print('	Recording data for MANHATTAN HEURISTIC for the YPuzzle Problem........')
+	# Data for MANHATTAN HEURISTIC
+	sIndex +=2
+	sheet.write(sIndex,0,'MANHATTAN HEURISTIC',headstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'Problem Number',style)
+	sheet.write(sIndex,1,'Time Taken to complete',style)
+	sheet.write(sIndex,2,'Number of Nodes Removed',style)
+	sheet.write(sIndex,3,'Length of Solution Path',style)
+	i = 1
+	sIndex += 1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h4)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for MANHATTAN HEURISTIC for the YPuzzle Problem!')
+	print('	Recording data for max(MANHATTAN, MISSING TILE) HEURISTIC for the YPuzzle Problem........')
+	i = 1
+	sIndex +=2
+	sheet.write(sIndex,0,'max(MANHATTAN, MISSING TILE) HEURISTIC',headstyle)
+	sIndex += 2
+	sheet.write(sIndex,0,'Problem Number',style)
+	sheet.write(sIndex,1,'Time Taken to complete',style)
+	sheet.write(sIndex,2,'Number of Nodes Removed',style)
+	sheet.write(sIndex,3,'Length of Solution Path',style)
+	sIndex +=1
+	for each in p:
+		start_time = time.time()
+		d = My_astar_search(each,h5)
+		elapsed_time = time.time() - start_time
+		sheet.write(sIndex,0,str(i))				# print("For problem "+str(i)+" :\n")
+		sheet.write(sIndex,1,str(elapsed_time))		# print("   Time [in seconds]: "+ str(elapsed_time)+"\n")
+		sheet.write(sIndex,2,str(d[1]))				# print("   Nodes removed: " + str(d[1])+"\n")
+		sheet.write(sIndex,3,str(d[2]))				# print("   Length of path: "+ str(d[2])+"\n")
+		sIndex += 1
+		i += 1
+	print('	Wrote data for max(MANHATTAN, MISSING TILE) HEURISTIC for the YPuzzle Problem!')
 	wb.save("a1.xlsx")
 	print('!!!!!	EXCEL DATA WRITTEN FOR Q2	!!!!!\n')
 
 
-makeExcelSheet(10)
+
+
+makeExcelSheet(20)
 
