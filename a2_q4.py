@@ -12,16 +12,15 @@
 #| 	--> Implemented/Modified Fucntions:																																									|
 #|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables.																			|
 #|		+ my_MapColoringCSP() => modified the code to not parse the neighbors argument as a string.																										|
-#|		+ my_backtracking_search() => removed the assert statement.																																		|
 #|		+ generate_graphs() => generate 5 graphs as instructed in the assignment description, with n=100 and p belonging to the set {0.1, 0.2, 0.3, 0.4, 0.5} and return them as a list.					|
 #|		+ getChromaticNumber() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
-#|		+ run_q3() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
+#|		+ run_q4() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
 #|		+ insert_into_cell() => writes data into the excel file at a specified cell location determined by row number and column number.																|
-#|		+ q3_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
+#|		+ q4_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
 #|																																																		|
 #|	--> Usage:																																															|
-#|		]=> running the 'run_q3()' subroutine will output data recorded/tracked for every graph for five iterations onto the console/terminal.															|
-#|		]=> running the 'q3_excel_sheet' subroutine will output an excel file named "a2_q3.xlsx" in the same directory as this file with the data recorded/tracked.										|
+#|		]=> running the 'run_q4()' subroutine will output data recorded/tracked for every graph for five iterations onto the console/terminal.															|
+#|		]=> running the 'q4_excel_sheet' subroutine will output an excel file named "a2_q4.xlsx" in the same directory as this file with the data recorded/tracked.										|
 #|																																																		|
 #| 					!!!!!!!!!!! I generated the raw excel sheet and then syled/formatted it accordingly !!!!!!!!!!!																						|
 #+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -81,7 +80,9 @@ def getChromaticNumber(resDict):
 
 def run_q4():
 	for i in range(5):
-		print('FOR ITERATION : ' + str(i+1))
+		print('+------------------+')
+		print('| FOR ITERATION #' + str(i+1)+' |')
+		print('+------------------+\n')
 		g = generate_graphs()
 		gCount = 1
 		for each in g:
@@ -91,7 +92,7 @@ def run_q4():
 			for j in range(30):
 				numColors= range(j+1)
 				p = my_MapColoringCSP(numColors, each)
-				res = min_conflicts(p,10)
+				res = min_conflicts(p,1000)
 				assigns += p.nassigns
 				unassigns += p.n_unassigns
 				if res != None and check_teams(each, res):
@@ -106,5 +107,81 @@ def run_q4():
 			print('===================================================================================================================\n')
 			gCount+=1
 
+
+# Code to initialize hte excel workbook to write data into
+wb = openpyxl.Workbook()	# Create a workbook in which an excel sheet will be created
+sheet = wb.active			# create an active sheet in workbook
+sheet.title = "Assignment2_Question4" # title of the sheet
+
+def insert_into_cell(r,c,val):
+	""" Inserts val in the cell at row r and column c """
+	c = sheet.cell(row=r,column=c)
+	c.value = val
+
+
+def q4_excel_sheet():
+	print('!!!!!! BUILDING EXCEL SHEET .............\n')
+	sRow = 1	# sheet row index (global var)
+	sCol = 1	# sheet column index (global var)
+	insert_into_cell(sRow,sCol,'Assignment 2: Question 4 Data')
+	sRow+= 2
+	for i in range(5):
+		insert_into_cell(sRow,sCol,'ITERATION #'+str(i+1))
+		sRow+=1
+		insert_into_cell(sRow,sCol,'Friendship graph #')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of People/Nodes [n]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Probability of Friendship [p]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Time taken to solve Ice-breaker Problem [seconds]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Variables Assigned')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Variables Unassigned')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Teams or Chromatic Number')
+		sRow+=1
+		graphs = generate_graphs()
+		gNum = 1
+		gProb = 0.1
+		for each in graphs:
+			start_time = time.time()
+			assigns=0
+			unassigns=0
+			sCol = 1
+			for j in range(100):
+				colors = range(j+1)
+				p = my_MapColoringCSP(colors,each)
+				res = min_conflicts(p,1000)
+				assigns+=p.nassigns
+				unassigns+=p.n_unassigns
+				if res != None and check_teams(each,res):
+					elapsed_time = time.time() - start_time
+					break
+			insert_into_cell(sRow,sCol,gNum)
+			sCol+=1
+			insert_into_cell(sRow,sCol,100)
+			sCol+=1
+			insert_into_cell(sRow,sCol,gProb)
+			sCol+=1
+			insert_into_cell(sRow,sCol,elapsed_time)
+			sCol+=1
+			insert_into_cell(sRow,sCol,assigns)
+			sCol+=1
+			insert_into_cell(sRow,sCol,unassigns)
+			sCol+=1
+			insert_into_cell(sRow,sCol,getChromaticNumber(res))
+			sCol=1
+			sRow+=1
+			gProb+=0.1
+			gNum+=1
+		sRow+=5
+	wb.save('a2_q4.xlsx')
+	print('DATA RECORDED IN "a2_q4.xlsx" IN THE ROOT DIRECTORY !!!!!!')
+
 run_q4()
+# q4_excel_sheet()
+
+
 # END of a2_q4.py

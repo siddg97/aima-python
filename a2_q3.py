@@ -106,7 +106,9 @@ def getChromaticNumber(resDict):
 
 def run_q3():
 	for i in range(5):
-		print('FOR ITERATION #'+ str(i+1)+'\n')
+		print('+------------------+')
+		print('| FOR ITERATION #'+ str(i+1)+' |')
+		print('+------------------+\n')
 		g = generate_graphs()
 		gCount = 1
 		for each in g:
@@ -122,10 +124,8 @@ def run_q3():
 				if res != None and check_teams(each,res):
 					elapsed_time = time.time() - start_time
 					break
-			print('For graph #'+str(gCount)+': \n===================================================================================================================')
-			print(each)
-			print('\nResults: \n===================================================================================================================')
-			print(res)
+			print('For Graph #'+str(gCount))
+			print('===================================================================================================================')
 			print('Time taken to find sloution: '+ str(elapsed_time))
 			print('Number of varibales assigned: '+ str(assigns))
 			print('Number of varibales unassigned: '+ str(unassigns))
@@ -172,12 +172,11 @@ def q3_excel_sheet():
 		gProb = 0.1
 		for each in graphs:
 			start_time = time.time()
-			steps = 1
 			assigns=0
 			unassigns=0
 			sCol = 1
 			for j in range(30):
-				colors = range(j)
+				colors = range(j+1)
 				p = my_MapColoringCSP(colors,each)
 				res = my_backtracking_search(p,mrv,lcv,forward_checking)
 				assigns+=p.nassigns
@@ -185,8 +184,6 @@ def q3_excel_sheet():
 				if res != None and check_teams(each,res):
 					elapsed_time = time.time() - start_time
 					break
-				else:
-					steps += 1
 			insert_into_cell(sRow,sCol,gNum)
 			sCol+=1
 			insert_into_cell(sRow,sCol,30)
