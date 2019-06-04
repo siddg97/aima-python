@@ -106,7 +106,7 @@ def getChromaticNumber(resDict):
 
 def run_q3():
 	for i in range(5):
-		print('FOR ITERATION : '+ str(i+1))
+		print('FOR ITERATION #'+ str(i+1)+'\n')
 		g = generate_graphs()
 		gCount = 1
 		for each in g:
@@ -114,7 +114,7 @@ def run_q3():
 			assigns = 0
 			unassigns = 0
 			for j in range(30):
-				numColors = range(j)
+				numColors = range(j+1)
 				p = my_MapColoringCSP(numColors,each)
 				res = my_backtracking_search(p,mrv,lcv,forward_checking)
 				assigns+=p.nassigns
@@ -210,7 +210,7 @@ def q3_excel_sheet():
 
 
 
-# run_q3()
+run_q3()
 # q3_excel_sheet()
 
 
