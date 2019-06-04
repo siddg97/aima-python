@@ -1,12 +1,30 @@
 # START of a2_q3.py
 
-#+----------------------------------------------------------------------------------------------+
-#| QUESTION 3: Exact sloution																	|
-#|		
-#|
-#|
-#|
-#+----------------------------------------------------------------------------------------------+
+#+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+#| QUESTION 3: Exact solution 																																											|
+#| 																																																		|
+#| 	--> CITATIONS :-																																													|
+#|		+ aima-code/aima-python : Textbook code in python from Github [ https://github.com/aimacode/aima-python]																						|
+#|		+ python documentation : Genral usage and syntax for using python3 [ https://docs.python.org/3/ ]																								|
+#|		+ Course website for CMPT310 : To get notes on search methods and heuristics [ http://www.sfu.ca/~tjd/310summer2019/index.html ]																|
+#|		+ Python library "openpyxl" : For making an Excel sheet using just python3  [ https://openpyxl.readthedocs.io/en/stable/ ]																		|
+#|																																																		|
+#| 	--> Implemented/Modified Fucntions:																																									|
+#|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables.																			|
+#|		+ my_MapColoringCSP() => modified the code to not parse the neighbors argument as a string.																										|
+#|		+ my_backtracking_search() => removed the assert statement.																																		|
+#|		+ generate_graphs() => generate 5 graphs as instructed in the assignment description, with n=30 and p belonging to the set {0.1, 0.2, 0.3, 0.4, 0.5} and return them as a list.					|
+#|		+ getNumColors() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
+#|		+ run_q3() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
+#|		+ insert_into_cell() => writes data into the excel file at a specified cell location determined by row number and column number.																|
+#|		+ q3_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
+#|																																																		|
+#|	--> Usage:																																															|
+#|		]=> running the 'run_q3()' subroutine will output data recorded/tracked for every graph for five iterations onto the console/terminal.															|
+#|		]=> running the 'q3_excel_sheet' subroutine will output an excel file named "a2_q3.xlsx" in the same directory as this file with the data recorded/tracked.										|
+#|																																																		|
+#| 					!!!!!!!!!!! I generated the raw excel sheet and then syled/formatted it accordingly !!!!!!!!!!!																						|
+#+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 from csp import * 		# Import code from csp.py
 from a2_q1 import *		# Import code from a2_q1.py. Effectively import rand_graph() sub-routine
@@ -69,7 +87,9 @@ def my_backtracking_search(csp,
 		csp.unassign(var, assignment)
 		return None
 	result = backtrack({})
+	# MODIFICATION - START
 	# assert result is None or csp.goal_test(result)
+	# MODIFICATION - END
 	return result
 #_________________________________________________________________________________________________________________
 
@@ -119,6 +139,7 @@ def run_q3():
 			print('===================================================================================================================\n')
 			gCount+=1
 
+# Code to initialize hte excel workbook to write data into
 wb = openpyxl.Workbook()	# Create a workbook in which an excel sheet will be created
 sheet = wb.active			# create an active sheet in workbook
 sheet.title = "Assignment2_Question3" # title of the sheet
@@ -194,8 +215,8 @@ def q3_excel_sheet():
 
 
 
-run_q3()
+# run_q3()
+# q3_excel_sheet()
 
-#q3_excel_sheet()
 
 # END of a2_q3.py
