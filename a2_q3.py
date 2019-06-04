@@ -6,7 +6,7 @@
 #| 	--> CITATIONS :-																																													|
 #|		+ aima-code/aima-python : Textbook code in python from Github [ https://github.com/aimacode/aima-python]																						|
 #|		+ python documentation : Genral usage and syntax for using python3 [ https://docs.python.org/3/ ]																								|
-#|		+ Course website for CMPT310 : To get notes on search methods and heuristics [ http://www.sfu.ca/~tjd/310summer2019/index.html ]																|
+#|		+ Course website for CMPT310 : To get notes on CSPs and backtracking search [ http://www.sfu.ca/~tjd/310summer2019/index.html ]																|
 #|		+ Python library "openpyxl" : For making an Excel sheet using just python3  [ https://openpyxl.readthedocs.io/en/stable/ ]																		|
 #|																																																		|
 #| 	--> Implemented/Modified Fucntions:																																									|
@@ -14,7 +14,7 @@
 #|		+ my_MapColoringCSP() => modified the code to not parse the neighbors argument as a string.																										|
 #|		+ my_backtracking_search() => removed the assert statement.																																		|
 #|		+ generate_graphs() => generate 5 graphs as instructed in the assignment description, with n=30 and p belonging to the set {0.1, 0.2, 0.3, 0.4, 0.5} and return them as a list.					|
-#|		+ getNumColors() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
+#|		+ getChromaticNumber() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
 #|		+ run_q3() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
 #|		+ insert_into_cell() => writes data into the excel file at a specified cell location determined by row number and column number.																|
 #|		+ q3_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
@@ -60,16 +60,11 @@ def my_MapColoringCSP(colors, neighbors):
 	# if isinstance(neighbors, str):
 	#	 neighbors = parse_neighbors(neighbors)
 # End of modification 1 by Siddharth !!!!
-	return my_CSP(list(neighbors.keys()), UniversalDict(colors), neighbors,
-			   different_values_constraint)
+	return my_CSP(list(neighbors.keys()), UniversalDict(colors), neighbors, different_values_constraint)
 
 
 # !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
-def my_backtracking_search(csp,
-						select_unassigned_variable,
-						order_domain_values,
-						inference):
-	"""[Figure 6.5]"""
+def my_backtracking_search(csp, select_unassigned_variable, order_domain_values, inference):
 
 	def backtrack(assignment):
 		if len(assignment) == len(csp.variables):
@@ -101,7 +96,7 @@ def generate_graphs():
 	graphs = [rand_graph(30, 0.1), rand_graph(30, 0.2), rand_graph(30, 0.3), rand_graph(30, 0.4), rand_graph(30, 0.5)]
 	return graphs
 
-def getNumColors(resDict):
+def getChromaticNumber(resDict):
 	"""Gets the number of Colors in the result of backtracking search for the coloring problem CSP"""
 	maxColor = 0
 	for each in resDict.values():
@@ -135,7 +130,7 @@ def run_q3():
 			print('Number of varibales assigned: '+ str(assigns))
 			print('Number of varibales unassigned: '+ str(unassigns))
 			print('Is the result valid? ' + str(check_teams(each,res)))
-			print('Number of teams(colors) required to solve the Ice-Breaker Problem for the given instance: ' + str(getNumColors(res)))
+			print('Number of teams(chromatic number) required to solve the Ice-Breaker Problem for the given instance: ' + str(getChromaticNumber(res)))
 			print('===================================================================================================================\n')
 			gCount+=1
 
@@ -170,7 +165,7 @@ def q3_excel_sheet():
 		sCol+=1
 		insert_into_cell(sRow,sCol,'Number of Variables Unassigned')
 		sCol+=1
-		insert_into_cell(sRow,sCol,'Number of Teams/Colors')
+		insert_into_cell(sRow,sCol,'Number of Teams or Chromatic Number')
 		sRow+=1
 		graphs = generate_graphs()
 		gNum = 1
@@ -204,7 +199,7 @@ def q3_excel_sheet():
 			sCol+=1
 			insert_into_cell(sRow,sCol,unassigns)
 			sCol+=1
-			insert_into_cell(sRow,sCol,getNumColors(res))
+			insert_into_cell(sRow,sCol,getChromaticNumber(res))
 			sCol=1
 			sRow+=1
 			gProb+=0.1
