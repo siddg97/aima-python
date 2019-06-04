@@ -10,30 +10,17 @@
 
 from csp import * 		# Import code from csp.py
 from a2_q1 import *		# Import code from a2_q1.py. Effectively import rand_graph() sub-routine
-from a2_q2 import *		# Import code from a2_q1.py. Effectively import check_teams() sub-routine
+from a2_q2 import *		# Import code from a2_q2.py. Effectively import check_teams() sub-routine
 import time 			# Import the time module to get running time for each instance of problem we solve
+import openpyxl			# Import the library to automatically generate excel sheets for the recorded data
 
 #__________________________TAKEN FROM csp.py and modified________________________________________
 
-class my_CSP(search.Problem):
+class my_CSP(CSP):
 	def __init__(self, variables, domains, neighbors, constraints):
-		"""Construct a CSP problem. If variables is empty, it becomes domains.keys()."""
-		variables = variables or list(domains.keys())
-
-		self.variables = variables
-		self.domains = domains
-		self.neighbors = neighbors
-		self.constraints = constraints
-		self.initial = ()
-		self.curr_domains = None
-		self.nassigns = 0
+		CSP.__init__(self,variables,domains,neighbors,constraints)
 		# MODIFIED to add a member variable to the class to get number of unassignments
 		self.n_unassigns = 0
-
-	def assign(self, var, val, assignment):
-		"""Add {var: val} to assignment; Discard the old value if any."""
-		assignment[var] = val
-		self.nassigns += 1
 
 	def unassign(self, var, assignment):
 		"""Remove {var: val} from assignment.
@@ -41,89 +28,7 @@ class my_CSP(search.Problem):
 		just call assign for that."""
 		if var in assignment:
 			del assignment[var]
-			# MODIFIED to increas the value of unassigned variables every time an unassignment takes place
-			self.n_unassigns += 1
-
-	def nconflicts(self, var, val, assignment):
-		"""Return the number of conflicts var=val has with other variables."""
-		# Subclasses may implement this more efficiently
-		def conflict(var2):
-			return (var2 in assignment and
-					not self.constraints(var, val, var2, assignment[var2]))
-		return count(conflict(v) for v in self.neighbors[var])
-
-	def display(self, assignment):
-		"""Show a human-readable representation of the CSP."""
-		# Subclasses can print in a prettier way, or display with a GUI
-		print('CSP:', self, 'with assignment:', assignment)
-
-	# These methods are for the tree and graph-search interface:
-
-	def actions(self, state):
-		"""Return a list of applicable actions: nonconflicting
-		assignments to an unassigned variable."""
-		if len(state) == len(self.variables):
-			return []
-		else:
-			assignment = dict(state)
-			var = first([v for v in self.variables if v not in assignment])
-			return [(var, val) for val in self.domains[var]
-					if self.nconflicts(var, val, assignment) == 0]
-
-	def result(self, state, action):
-		"""Perform an action and return the new state."""
-		(var, val) = action
-		return state + ((var, val),)
-
-	def goal_test(self, state):
-		"""The goal is to assign all variables, with all constraints satisfied."""
-		assignment = dict(state)
-		return (len(assignment) == len(self.variables)
-				and all(self.nconflicts(variables, assignment[variables], assignment) == 0
-						for variables in self.variables))
-
-	# These are for constraint propagation
-
-	def support_pruning(self):
-		"""Make sure we can prune values from domains. (We want to pay
-		for this only if we use it.)"""
-		if self.curr_domains is None:
-			self.curr_domains = {v: list(self.domains[v]) for v in self.variables}
-
-	def suppose(self, var, value):
-		"""Start accumulating inferences from assuming var=value."""
-		self.support_pruning()
-		removals = [(var, a) for a in self.curr_domains[var] if a != value]
-		self.curr_domains[var] = [value]
-		return removals
-
-	def prune(self, var, value, removals):
-		"""Rule out var=value."""
-		self.curr_domains[var].remove(value)
-		if removals is not None:
-			removals.append((var, value))
-
-	def choices(self, var):
-		"""Return all values for var that aren't currently ruled out."""
-		return (self.curr_domains or self.domains)[var]
-
-	def infer_assignment(self):
-		"""Return the partial assignment implied by the current inferences."""
-		self.support_pruning()
-		return {v: self.curr_domains[v][0]
-				for v in self.variables if 1 == len(self.curr_domains[v])}
-
-	def restore(self, removals):
-		"""Undo a supposition and all inferences from it."""
-		for B, b in removals:
-			self.curr_domains[B].append(b)
-
-	# This is for min_conflicts search
-
-	def conflicted_vars(self, current):
-		"""Return a list of variables in current assignment that are in conflict"""
-		return [var for var in self.variables
-				if self.nconflicts(var, current[var], current) > 0]
+			self.n_unassigns += 1 # MODIFIED to increase the value of unassigned variables every time an unassignment takes place
 
 
 # !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
@@ -140,18 +45,12 @@ def my_MapColoringCSP(colors, neighbors):
 	return my_CSP(list(neighbors.keys()), UniversalDict(colors), neighbors,
 			   different_values_constraint)
 
-# p = MapColoringCSP(range(5),rand_graph(5,0.5))
-# print(p.variables)
-# print(p.neighbors)
-# print(p.domains)
-
-
 
 # !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
 def my_backtracking_search(csp,
-						select_unassigned_variable=first_unassigned_variable,
-						order_domain_values=unordered_domain_values,
-						inference=no_inference):
+						select_unassigned_variable,
+						order_domain_values,
+						inference):
 	"""[Figure 6.5]"""
 
 	def backtrack(assignment):
@@ -169,29 +68,12 @@ def my_backtracking_search(csp,
 				csp.restore(removals)
 		csp.unassign(var, assignment)
 		return None
-
 	result = backtrack({})
-	assert result is None or csp.goal_test(result)
+	# assert result is None or csp.goal_test(result)
 	return result
-
-
-# !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
-def unordered_domain_values(var, assignment, csp):
-	"""The default value order."""
-	return csp.choices(var)
-
-
-# !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
-def first_unassigned_variable(assignment, csp):
-	"""The default variable order."""
-	return first([var for var in csp.variables if var not in assignment])
-
-
-# !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
-def no_inference(csp, var, value, assignment, removals):
-	return True
-
 #_________________________________________________________________________________________________________________
+
+#_______________________________________Implemented By SIDDHARTH__________________________________________________
 
 def generate_graphs():
 	"""generate the 5 graphs as requested by the
@@ -199,23 +81,121 @@ def generate_graphs():
 	graphs = [rand_graph(30, 0.1), rand_graph(30, 0.2), rand_graph(30, 0.3), rand_graph(30, 0.4), rand_graph(30, 0.5)]
 	return graphs
 
-def run_q3():
-	g = rand_graph(100,0.7)
-	p = my_MapColoringCSP(range(30),g)
-	start_time = time.time()
-	# ... do something ...
-	res = my_backtracking_search(p)
-	elapsed_time = time.time() - start_time
+def getNumColors(resDict):
+	"""Gets the number of Colors in the result of backtracking search for the coloring problem CSP"""
+	maxColor = 0
+	for each in resDict.values():
+		if each > maxColor:
+			maxColor = each
+	return (maxColor+1)
 
-	print(res)
-	print(elapsed_time)
-	print(p.nassigns)
-	print(p.n_unassigns)
+def run_q3():
+	for i in range(5):
+		print('FOR ITERATION : '+ str(i+1))
+		g = generate_graphs()
+		gCount = 1
+		for each in g:
+			start_time = time.time()
+			assigns = 0
+			unassigns = 0
+			for j in range(30):
+				numColors = range(j)
+				p = my_MapColoringCSP(numColors,each)
+				res = my_backtracking_search(p,mrv,lcv,forward_checking)
+				assigns+=p.nassigns
+				unassigns+=p.n_unassigns
+				if res != None and check_teams(each,res):
+					elapsed_time = time.time() - start_time
+					break
+			print('For graph #'+str(gCount)+': \n===================================================================================================================')
+			print(each)
+			print('\nResults: \n===================================================================================================================')
+			print(res)
+			print('Time taken to find sloution: '+ str(elapsed_time))
+			print('Number of varibales assigned: '+ str(assigns))
+			print('Number of varibales unassigned: '+ str(unassigns))
+			print('Is the result valid? ' + str(check_teams(each,res)))
+			print('Number of teams(colors) required to solve the Ice-Breaker Problem for the given instance: ' + str(getNumColors(res)))
+			print('===================================================================================================================\n')
+			gCount+=1
+
+wb = openpyxl.Workbook()	# Create a workbook in which an excel sheet will be created
+sheet = wb.active			# create an active sheet in workbook
+sheet.title = "Assignment2_Question3" # title of the sheet
+
+def insert_into_cell(r,c,val):
+	""" Inserts val in the cell at row r and column c """
+	c = sheet.cell(row=r,column=c)
+	c.value = val
+
+def q3_excel_sheet():
+	print('!!!!!! BUILDING EXCEL SHEET .............\n')
+	sRow = 1	# sheet row index (global var)
+	sCol = 1	# sheet column index (global var)
+	insert_into_cell(sRow,sCol,'Assignment 2: Question 3 Data')
+	sRow+= 2
+	for i in range(5):
+		insert_into_cell(sRow,sCol,'ITERATION #'+str(i+1))
+		sRow+=1
+		insert_into_cell(sRow,sCol,'Friendship graph #')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of People/Nodes [n]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Probability of Friendship [p]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Time taken to solve Ice-breaker Problem [seconds]')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Variables Assigned')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Variables Unassigned')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Teams/Colors')
+		sRow+=1
+		graphs = generate_graphs()
+		gNum = 1
+		gProb = 0.1
+		for each in graphs:
+			start_time = time.time()
+			steps = 1
+			assigns=0
+			unassigns=0
+			sCol = 1
+			for j in range(30):
+				colors = range(j)
+				p = my_MapColoringCSP(colors,each)
+				res = my_backtracking_search(p,mrv,lcv,forward_checking)
+				assigns+=p.nassigns
+				unassigns+=p.n_unassigns
+				if res != None and check_teams(each,res):
+					elapsed_time = time.time() - start_time
+					break
+				else:
+					steps += 1
+			insert_into_cell(sRow,sCol,gNum)
+			sCol+=1
+			insert_into_cell(sRow,sCol,30)
+			sCol+=1
+			insert_into_cell(sRow,sCol,gProb)
+			sCol+=1
+			insert_into_cell(sRow,sCol,elapsed_time)
+			sCol+=1
+			insert_into_cell(sRow,sCol,assigns)
+			sCol+=1
+			insert_into_cell(sRow,sCol,unassigns)
+			sCol+=1
+			insert_into_cell(sRow,sCol,getNumColors(res))
+			sCol=1
+			sRow+=1
+			gProb+=0.1
+			gNum+=1
+		sRow+=5
+	wb.save('a2_q3.xlsx')
+	print('DATA RECORDED IN "a2_q3.xlsx" IN THE ROOT DIRECTORY !!!!!!')
 
 
 
 run_q3()
 
-
+#q3_excel_sheet()
 
 # END of a2_q3.py
