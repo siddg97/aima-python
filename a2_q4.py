@@ -10,13 +10,13 @@
 #|		+ Python library "openpyxl" : For making an Excel sheet using just python3  [ https://openpyxl.readthedocs.io/en/stable/ ]																		|
 #|																																																		|
 #| 	--> Implemented/Modified Fucntions:																																									|
-#|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables.																			|
+#|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables and prunes.																			|
 #|		+ my_MapColoringCSP() => modified the code to not parse the neighbors argument as a string.																										|
 #|		+ generate_graphs() => generate 5 graphs as instructed in the assignment description, with n=100 and p belonging to the set {0.1, 0.2, 0.3, 0.4, 0.5} and return them as a list.					|
 #|		+ getChromaticNumber() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
 #|		+ run_q4() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
 #|		+ insert_into_cell() => writes data into the excel file at a specified cell location determined by row number and column number.																|
-#|		+ q4_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
+#|		+ q4_excel_sheet() => essentially the same thing as run_q4() but just writes raw data into an excel sheet named "a2_q4.xlsx" for each iterationa and solution.									|
 #|																																																		|
 #|	--> Usage:																																															|
 #|		]=> running the 'run_q4()' subroutine will output data recorded/tracked for every graph for five iterations onto the console/terminal.															|
@@ -39,6 +39,7 @@ class my_CSP(CSP):
 		CSP.__init__(self,variables,domains,neighbors,constraints)
 		# MODIFIED to add a member variable to the class to get number of unassignments
 		self.n_unassigns = 0
+		self.nprunes = 0
 
 	def unassign(self, var, assignment):
 		"""Remove {var: val} from assignment.
@@ -48,6 +49,12 @@ class my_CSP(CSP):
 			del assignment[var]
 			self.n_unassigns += 1 # MODIFIED to increase the value of unassigned variables every time an unassignment takes place
 
+	def prune(self, var, value, removals):
+			"""Rule out var=value."""
+			self.curr_domains[var].remove(value)
+			if removals is not None:
+				removals.append((var, value))
+				self.nprunes += 1
 
 # !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
 def my_MapColoringCSP(colors, neighbors):
@@ -89,12 +96,14 @@ def run_q4():
 			start_time = time.time()
 			assigns = 0
 			unassigns = 0
+			prunes = 0
 			for j in range(100):
 				numColors= range(j+1)
 				p = my_MapColoringCSP(numColors, each)
 				res = min_conflicts(p,2000)
 				assigns += p.nassigns
 				unassigns += p.n_unassigns
+				prunes += p.nprunes
 				if res != None and check_teams(each, res):
 					elapsed_time = time.time() - start_time
 					break
@@ -104,6 +113,7 @@ def run_q4():
 			print('Number of varibales unassigned: '+ str(unassigns))
 			print('Is the result valid? ' + str(check_teams(each,res)))
 			print('Number of teams(chromatic number) required to solve the Ice-Breaker Problem for the given instance: ' + str(getChromaticNumber(res)))
+			print('Number of values pruned: '+ str(prunes))
 			print('===================================================================================================================\n')
 			gCount+=1
 
@@ -141,6 +151,8 @@ def q4_excel_sheet():
 		insert_into_cell(sRow,sCol,'Number of Variables Unassigned')
 		sCol+=1
 		insert_into_cell(sRow,sCol,'Number of Teams or Chromatic Number')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Values Pruned')
 		sRow+=1
 		graphs = generate_graphs()
 		gNum = 1
@@ -149,13 +161,15 @@ def q4_excel_sheet():
 			start_time = time.time()
 			assigns=0
 			unassigns=0
+			prunes=0
 			sCol = 1
 			for j in range(100):
 				colors = range(j+1)
 				p = my_MapColoringCSP(colors,each)
-				res = min_conflicts(p,1000)
+				res = min_conflicts(p,1500)
 				assigns+=p.nassigns
 				unassigns+=p.n_unassigns
+				prunes+=p.nprunes
 				if res != None and check_teams(each,res):
 					elapsed_time = time.time() - start_time
 					break
@@ -172,6 +186,8 @@ def q4_excel_sheet():
 			insert_into_cell(sRow,sCol,unassigns)
 			sCol+=1
 			insert_into_cell(sRow,sCol,getChromaticNumber(res))
+			sCol+=1
+			insert_into_cell(sRow,sCol,prunes)
 			sCol=1
 			sRow+=1
 			gProb+=0.1
@@ -180,7 +196,7 @@ def q4_excel_sheet():
 	wb.save('a2_q4.xlsx')
 	print('DATA RECORDED IN "a2_q4.xlsx" IN THE ROOT DIRECTORY !!!!!!')
 
-run_q4()
+# run_q4()
 # q4_excel_sheet()
 
 

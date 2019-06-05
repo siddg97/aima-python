@@ -10,11 +10,11 @@
 #|		+ Python library "openpyxl" : For making an Excel sheet using just python3  [ https://openpyxl.readthedocs.io/en/stable/ ]																		|
 #|																																																		|
 #| 	--> Implemented/Modified Fucntions:																																									|
-#|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables.																			|
+#|		+ my_CSP class => created a child class from the CSP class in 'csp.py' to keep track of count of unassigned variables and prunes																			|
 #|		+ my_MapColoringCSP() => modified the code to not parse the neighbors argument as a string.																										|
 #|		+ my_backtracking_search() => removed the assert statement.																																		|
 #|		+ generate_graphs() => generate 5 graphs as instructed in the assignment description, with n=30 and p belonging to the set {0.1, 0.2, 0.3, 0.4, 0.5} and return them as a list.					|
-#|		+ getChromaticNumber() => returns the number of colors used to color the given graph OR the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
+#|		+ getChromaticNumber() => returns the number of colors used to color the given graph. In other words, the number of teams the people in a friendship graph have been divided in to solve the Ice-Breaker Problem.	|
 #|		+ run_q3() => runs the generate graph() function 5 times and solves the problems and prints out relevant data regarding the solutions.															|
 #|		+ insert_into_cell() => writes data into the excel file at a specified cell location determined by row number and column number.																|
 #|		+ q3_excel_sheet() => essentially the same thing as run_q3() but just writes raw data into an excel sheet named "a2_q3.xlsx" for each iterationa and solution.									|
@@ -37,9 +37,10 @@ import openpyxl			# Import the library to automatically generate excel sheets fo
 class my_CSP(CSP):
 	def __init__(self, variables, domains, neighbors, constraints):
 		CSP.__init__(self,variables,domains,neighbors,constraints)
-		# MODIFIED to add a member variable to the class to get number of unassignments
+		# MODIFIED to add a member variable to the class to get number of unassignments and number of values pruned
 		self.n_unassigns = 0
-
+		self.nprunes = 0
+	
 	def unassign(self, var, assignment):
 		"""Remove {var: val} from assignment.
 		DO NOT call this if you are changing a variable to a new value;
@@ -48,6 +49,12 @@ class my_CSP(CSP):
 			del assignment[var]
 			self.n_unassigns += 1 # MODIFIED to increase the value of unassigned variables every time an unassignment takes place
 
+	def prune(self, var, value, removals):
+		"""Rule out var=value."""
+		self.curr_domains[var].remove(value)
+		if removals is not None:
+			removals.append((var, value))
+			self.nprunes += 1
 
 # !!! Taken from csp.py and modified !!! Modifications are marked with appropiate comments
 def my_MapColoringCSP(colors, neighbors):
@@ -115,12 +122,14 @@ def run_q3():
 			start_time = time.time()
 			assigns = 0
 			unassigns = 0
+			prunes = 0
 			for j in range(30):
 				numColors = range(j+1)
 				p = my_MapColoringCSP(numColors,each)
 				res = my_backtracking_search(p,mrv,lcv,forward_checking)
 				assigns+=p.nassigns
 				unassigns+=p.n_unassigns
+				prunes+=p.nprunes
 				if res != None and check_teams(each,res):
 					elapsed_time = time.time() - start_time
 					break
@@ -131,6 +140,7 @@ def run_q3():
 			print('Number of varibales unassigned: '+ str(unassigns))
 			print('Is the result valid? ' + str(check_teams(each,res)))
 			print('Number of teams(chromatic number) required to solve the Ice-Breaker Problem for the given instance: ' + str(getChromaticNumber(res)))
+			print('Number of values pruned: '+ str(prunes))
 			print('===================================================================================================================\n')
 			gCount+=1
 
@@ -166,6 +176,8 @@ def q3_excel_sheet():
 		insert_into_cell(sRow,sCol,'Number of Variables Unassigned')
 		sCol+=1
 		insert_into_cell(sRow,sCol,'Number of Teams or Chromatic Number')
+		sCol+=1
+		insert_into_cell(sRow,sCol,'Number of Values Pruned')
 		sRow+=1
 		graphs = generate_graphs()
 		gNum = 1
@@ -174,6 +186,7 @@ def q3_excel_sheet():
 			start_time = time.time()
 			assigns=0
 			unassigns=0
+			prunes=0
 			sCol = 1
 			for j in range(30):
 				colors = range(j+1)
@@ -181,6 +194,7 @@ def q3_excel_sheet():
 				res = my_backtracking_search(p,mrv,lcv,forward_checking)
 				assigns+=p.nassigns
 				unassigns+=p.n_unassigns
+				prunes+=p.nprunes
 				if res != None and check_teams(each,res):
 					elapsed_time = time.time() - start_time
 					break
@@ -197,6 +211,8 @@ def q3_excel_sheet():
 			insert_into_cell(sRow,sCol,unassigns)
 			sCol+=1
 			insert_into_cell(sRow,sCol,getChromaticNumber(res))
+			sCol+=1
+			insert_into_cell(sRow,sCol,prunes)
 			sCol=1
 			sRow+=1
 			gProb+=0.1
@@ -207,7 +223,7 @@ def q3_excel_sheet():
 
 
 
-run_q3()
+# run_q3()
 # q3_excel_sheet()
 
 
