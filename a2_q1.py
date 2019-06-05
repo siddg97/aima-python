@@ -25,5 +25,4 @@ def rand_graph(n,p):
 				g[person].append(other_person)
 				g[other_person].append(person)
 	return g
-
 # END of a2_q1.py

@@ -89,10 +89,10 @@ def run_q4():
 			start_time = time.time()
 			assigns = 0
 			unassigns = 0
-			for j in range(30):
+			for j in range(100):
 				numColors= range(j+1)
 				p = my_MapColoringCSP(numColors, each)
-				res = min_conflicts(p,1000)
+				res = min_conflicts(p,2000)
 				assigns += p.nassigns
 				unassigns += p.n_unassigns
 				if res != None and check_teams(each, res):
