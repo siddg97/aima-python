@@ -17,6 +17,13 @@ def make_constraints(l,type='atmost_one'):
 		constr += '0\n'
 	return constr
 
-class nQueens:
-	def __init__(self,n):
-		self.n = n
+def make_rows(n):
+	"""returns a list of rows for the n-queens problem"""
+	rows = []
+	for i in range(1,n*n,n):
+		r = [i]
+		for j in range(i+1,i+n):
+			r.append(j)
+		rows.append(r)
+	return rows
+
