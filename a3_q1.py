@@ -1,15 +1,22 @@
+def make_constraints(l,type='atmost_one'):
+	"""generate a string of constraints for the list l which can be a row or column or a diagonal of a n-queens problem."""
+#	USAGE:
+#		- l = list of variables for which constraints are rto be generated
+#		- if type == 'exactly_one' is passed then makes constraints for a row or a column
+#		- if type is not passed OR if type == 'atmost_one' is passed then makes constraints for a diagonal
 
-class Contraint:
+	n = len(l)
+	constr = ''
+	for i in range(n-1):
+		for j in range(i+1,n):
+			constr += str(-l[i]) + ' ' + str(-l[j]) + ' 0\n'
+	
+	if(type == 'exactly_one'):
+		for each in l:
+			constr += str(each) +' '
+		constr += '0\n'
+	return constr
+
+class nQueens:
 	def __init__(self,n):
-		self.n = str(n)
-		self.num_c = str(int(((5*n*n*n) - (6*n*n) + (7*n))/3))
-		self.r_c = ''
-		self.c_c = ''
-		self.d_c = ''
-		self.sat_str = 'c ' + self.n + '-queens problem (sat)' + '\n p cnf ' + self.n + ' ' + self.num_c + '\n'
-
-	def make_sat_str(self):
-		self.sat_str += self.r_c + '\n' + self.c_c + '\n' + self.d_c
-
-t = Contraint(7)
-print(t.num_c)
+		self.n = n
