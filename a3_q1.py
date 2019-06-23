@@ -1,3 +1,6 @@
+import os
+import time
+
 def make_constraints(l,type='atmost_one'):
 	"""	generate a string of constraints for the list l which can be a row or column or a diagonal of a n-queens problem.
 		USAGE:
@@ -37,10 +40,9 @@ def make_cols(n):
 		cols.append(c)
 	return cols 
 
-def make_diagonals(n):
+def make_diagonals(n,board):
 	"""returns a list of all diagonals for a nxn chess board"""
 	diagonals = []
-	board = make_rows(n)
 	d = []
 	for p in range(2*n-1):
 		d.append([board[p-q][q] for q in range(max(0, p - n + 1), min(p, n - 1) + 1)])
@@ -52,6 +54,30 @@ def make_diagonals(n):
 		else:
 			diagonals.append(each)
 	return diagonals
-	
 
-print(make_diagonals(4))
+def make_queen_sat(N):
+	"""generates a pyhton string which is a SAT sentence that can be passed to minisat"""
+	rows  = make_rows(N)
+	cols  = make_cols(N)
+	diags = make_diagonals(N,rows)
+	sentence = ''
+
+	for each in rows:
+		sentence += make_constraints(each,'exactly_one')
+
+	for each in cols:
+		sentence += make_constraints(each,'exactly_one')
+
+	for each in diags:
+		sentence += make_constraints(each,'atmost_one')
+
+	header = 'c N='+str(N)+' queens problem\n'+'p cnf '+str(N*N)+' '+str(sentence.count('\n'))+'\n'
+	final_sentence = header + sentence
+	return final_sentence
+
+def write_sat_file(N):
+	"""create a file 'sat.txt' and write the SAT sentence in cnf form for minisat to use """
+	f = open("sat.txt","w+")
+	f.write(make_queen_sat(N))
+	f.close()
+
