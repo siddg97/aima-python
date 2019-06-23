@@ -1,6 +1,7 @@
 import os
 import time
 import math
+import openpyxl
 
 def make_constraints(l,type='atmost_one'):
 	"""	generate a string of constraints for the list l which can be a row or column or a diagonal of a n-queens problem.
@@ -163,5 +164,19 @@ def run_experiment(t=20):
 			break
 		i += 1
 	return i
+
+def make_experiment_sheet(t=20):
+	""" Generate excel sheet for experiment to find MAX_N for which 
+	minisat can sole the N-queens problems in less than 't' seconds """
+	wb = openpyxl.Workbook()				# Create a Workbook in which an excel sheet will be created
+	sheet = wb.active						# Create an active sheet
+	sheet.title = "Assignment3_Question1"	# Title of the active sheet
+
+	def insert_into_cell(r,c,val):
+		""" inserts val in the cell at row r and column c """
+		c = sheet.cell(row=r,column=c)
+		c.value = val
+
+	
 
 run_experiment(0.02)
