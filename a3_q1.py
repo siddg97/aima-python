@@ -134,9 +134,9 @@ def draw_queen_sat_sol(sol):
 		print(board)
 		
 
-def run_experiment(t):
+def run_experiment(t=20):
 	""" Generates N-queens sat sentences and runs minisat.
-	Stops running when a value of N takes more than 't' seconds.
+	Stops running when a value of N takes more than 't' seconds. Default value for t is 20 [20 seconds]
 	Returns the MAX_N values as described by assignment description"""
 	i = 2
 	while True:
