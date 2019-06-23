@@ -1,5 +1,6 @@
 import os
 import time
+import math
 
 def make_constraints(l,type='atmost_one'):
 	"""	generate a string of constraints for the list l which can be a row or column or a diagonal of a n-queens problem.
@@ -20,6 +21,7 @@ def make_constraints(l,type='atmost_one'):
 		constr += '0\n'
 	return constr
 
+
 def make_rows(n):
 	"""returns a list of rows for the nxn chess board"""
 	rows = []
@@ -30,6 +32,7 @@ def make_rows(n):
 		rows.append(r)
 	return rows
 
+
 def make_cols(n):
 	"""returns a list of columns for the nxn chess board"""
 	cols = []
@@ -39,6 +42,7 @@ def make_cols(n):
 			c.append(j)
 		cols.append(c)
 	return cols 
+
 
 def make_diagonals(n,board):
 	"""returns a list of all diagonals for a nxn chess board"""
@@ -54,6 +58,7 @@ def make_diagonals(n,board):
 		else:
 			diagonals.append(each)
 	return diagonals
+
 
 def make_queen_sat(N):
 	"""generates a pyhton string which is a SAT sentence that can be passed to minisat"""
@@ -75,9 +80,88 @@ def make_queen_sat(N):
 	final_sentence = header + sentence
 	return final_sentence
 
+
 def write_sat_file(N):
 	"""create a file 'sat.txt' and write the SAT sentence in cnf form for minisat to use """
 	f = open("sat.txt","w+")
 	f.write(make_queen_sat(N))
 	f.close()
 
+def read_sat_out():
+	""" read the file 'out' and return a solution of the cnf given to minisat """
+	f = open("out","r")
+	return f.read()
+
+def convert_sol(str):
+	""" Takes in the string in the output of minisat.
+	Returns a list of integers of the solution"""
+
+	sol_list_str = str.split()
+	if sol_list_str[0] == 'UNSAT':
+		return 'UNSAT'
+	sol_list_int = list(map(int,sol_list_str[1:]))
+	return sol_list_int
+
+def run_minisat():
+	""" run the command for running minisat to solve the cnf in 'sat.txt' """
+	os.system('minisat sat.txt out')
+
+def draw_queen_sat_sol(sol):
+	""" Draws out a nxn chess board with the solution for the N-queens problem. OR 
+	Returns a meesage '!!! NO solution found !!!' """
+	if sol == 'UNSAT':
+		print('!!! NO solution found !!!\n')
+	else:
+		n_sqr = sol[-2]
+		if n_sqr < 0:
+			n_sqr *= -1
+		n = int(math.sqrt(n_sqr))
+		if n >= 40:
+			print('!!! SOLUTION TOO BIG TO PRINT !!!')
+			return
+		board = ''
+		for i in range(n):
+			row = ''
+			for j in range(i*n,(i+1)*n):
+				if sol[j] < 0:
+					row += ' . '
+				elif sol[j] > 0:
+					row += ' Q '
+				else:
+					row += '\n'
+			row += '\n'
+			board += row
+		print(board)
+		
+
+def run_experiment(t):
+	""" Generates N-queens sat sentences and runs minisat.
+	Stops running when a value of N takes more than 't' seconds.
+	Returns the MAX_N values as described by assignment description"""
+	i = 2
+	while True:
+		print('+++++++++++++++++++++++++++++++++')
+		print('| Generating sat.txt for N='+str(i)+'\t|')
+		write_sat_file(i)
+		t_s = time.time()
+		print('| Running mini sat now..... \t|')
+		print('+++++++++++++++++++++++++++++++++')
+		print('\n\n')
+		run_minisat()
+		t_e = time.time() - t_s
+		print('\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+		print('| Done Running minisat took time= ' + str(t_e) + ' seconds' + '\t|')
+		print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+		print('SOLUTION :')
+		sol = convert_sol(read_sat_out())
+		draw_queen_sat_sol(sol)
+		print('\n\n')
+		if t_e > t:
+			print('+=======================================================================================+')
+			print('| MAX_N = ' + str(i-1) + ' for minisat to solve the N-queens problem in less than ' + str(t) + ' second(s) \t|') 
+			print('+=======================================================================================+')
+			break
+		i += 1
+	return i
+
+run_experiment(0.02)
