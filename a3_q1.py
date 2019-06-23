@@ -18,7 +18,7 @@ def make_constraints(l,type='atmost_one'):
 	return constr
 
 def make_rows(n):
-	"""returns a list of rows for the n-queens problem"""
+	"""returns a list of rows for the nxn chess board"""
 	rows = []
 	for i in range(1,n*n,n):
 		r = [i]
@@ -28,11 +28,30 @@ def make_rows(n):
 	return rows
 
 def make_cols(n):
-	"""returns a list of columns for the n-queens problem"""
+	"""returns a list of columns for the nxn chess board"""
 	cols = []
 	for i in range(1,n+1):
 		c = [i]
 		for j in range(i+n,n*n + 1,n):
 			c.append(j)
 		cols.append(c)
-	return cols
+	return cols 
+
+def make_diagonals(n):
+	"""returns a list of all diagonals for a nxn chess board"""
+	diagonals = []
+	board = make_rows(n)
+	d = []
+	for p in range(2*n-1):
+		d.append([board[p-q][q] for q in range(max(0, p - n + 1), min(p, n - 1) + 1)])
+		d.append([board[n-p+q-1][q] for q in range(max(0, p - n + 1), min(p, n - 1) + 1)])
+
+	for each in d:
+		if len(each) == 1:
+			continue
+		else:
+			diagonals.append(each)
+	return diagonals
+	
+
+print(make_diagonals(4))
