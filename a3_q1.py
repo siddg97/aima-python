@@ -144,10 +144,10 @@ def run_experiment(t=20):
 		print('+++++++++++++++++++++++++++++++++')
 		print('| Generating sat.txt for N='+str(i)+'\t|')
 		write_sat_file(i)
-		t_s = time.time()
 		print('| Running mini sat now..... \t|')
 		print('+++++++++++++++++++++++++++++++++')
 		print('\n\n')
+		t_s = time.time()
 		run_minisat()
 		t_e = time.time() - t_s
 		print('\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -176,7 +176,42 @@ def make_experiment_sheet(t=20):
 		""" inserts val in the cell at row r and column c """
 		c = sheet.cell(row=r,column=c)
 		c.value = val
-
 	
+	print('RECORDING DATA NOW >>>')
+	sRow = 1
+	sCol = 1
+	insert_into_cell(sRow,sCol,'N-Queens Experiment')
+	sCol += 1
+	insert_into_cell(sRow,sCol,'MAX_N for time (seconds) taken to run minisat for atmost :')
+	sCol += 1
+	insert_into_cell(sRow,sCol,t)
+	sCol = 1
+	sRow += 2
+	insert_into_cell(sRow,sCol,'N')
+	sCol += 1
+	insert_into_cell(sRow,sCol,'Time taken by minisat')
+	sCol = 1
+	sRow += 1
+	n = 2
+	while True:
+		write_sat_file(n)
+		print('\n\n')
+		t_s = time.time()
+		run_minisat()
+		t_e = time.time() - t_s
+		print('\n\n')
+		if t_e > t:
+			insert_into_cell(sRow+2,1,'MAX_N:')
+			insert_into_cell(sRow+2,2,n-1)
+			break
+		insert_into_cell(sRow,sCol,n)
+		sCol += 1
+		insert_into_cell(sRow,sCol,t_e)
+		sCol = 1
+		sRow += 1
+		n += 1
+	wb.save('a3_q1.xlsx')
+	print('DATA RECORDED IN "a3_q1.xlsx" IN THE ROOT DIRECTORY <<<')
 
-run_experiment(0.02)
+
+make_experiment_sheet(10)
