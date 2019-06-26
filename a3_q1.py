@@ -100,7 +100,7 @@ def convert_sol(str):
 	sol_list_str = str.split()
 	if sol_list_str[0] == 'UNSAT':
 		return 'UNSAT'
-	sol_list_int = list(map(int,sol_list_str[1:]))
+	sol_list_int = list(map(int,sol_list_str[1:-1]))
 	return sol_list_int
 
 def run_minisat():
@@ -214,4 +214,4 @@ def make_experiment_sheet(t=20):
 	print('DATA RECORDED IN "a3_q1.xlsx" IN THE ROOT DIRECTORY <<<')
 
 
-make_experiment_sheet(10)
+print(make_queen_sat(10))
