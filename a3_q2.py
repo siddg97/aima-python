@@ -2,7 +2,7 @@ import math
 import os
 import time
 import random
-
+import subprocess
 
 def rand_graph(n,p):
 	g = dict()	# empty dictionary
@@ -83,6 +83,7 @@ def list_edge_vars(l,k):
 				pair.append(-map_to_var(node,c,k))
 			l_constr.append(pair)
 	return l_constr
+
 
 def make_constraints(l,k,type):
 	""" make constraints according to the 'type' parameter:
@@ -166,25 +167,75 @@ def convert_sol(str):
 
 def run_minisat():
 	""" run the command for running minisat to solve the cnf in 'sat.txt' """
-	os.system('minisat sat2.txt out2')
+	try:
+		subprocess.run(['minisat','sat2.txt','out2'],timeout=5)
+	except:
+		return False
+	return True
+	#os.system('minisat sat2.txt out2')
 
 def find_min_teams(graph):
 	""" finds the min number of teams that are required 
 	to solve the instance of the friendship graph given using minisat """
-	for k in range(1,len(graph)+1):
+	n = len(graph)
+	inc_k = range(1,n+1)
+	for k in inc_k:
 		cnf = make_ice_breaker_sat(graph,k)
 		make_minisat_file(cnf)
-		run_minisat()
-		sol = convert_sol(read_sat_out())
-		if sol == 'UNSAT':
-			print('No solution for this problem!!')
+		if(run_minisat()):
+			sol = convert_sol(read_sat_out())
+			if sol == 'UNSAT':
+				print('k-coloring not possible for k='+ str(k))
+				continue
+			else:
+				print('Optimal Solution Found k='+ str(num_teams(sol,k)))
+				return num_teams(sol,k)
+				break
 		else:
-			print('SOLUTION: '+str(num_teams(sol,k)))
-			break
+			print('k=' + str(k) + ' runs minisat for too long and we consider that it is an UNSAT instance\n')
+			continue
+		
+def run_experiment():
+	g1 = [rand_graph(200,0.1)]*5
+	g2 = [rand_graph(200,0.2)]*5
+	g3 = [rand_graph(200,0.3)]*5
+	g4 = [rand_graph(200,0.4)]*5
+	g5 = [rand_graph(200,0.5)]*5
+	g6 = [rand_graph(200,0.6)]*5
+	g7 = [rand_graph(200,0.7)]*5
+	g8 = [rand_graph(200,0.8)]*5
+	g9 = [rand_graph(200,0.9)]*5
+	all_graphs = []
+	all_graphs.append(g1)
+	all_graphs.append(g2)
+	all_graphs.append(g3)
+	all_graphs.append(g4)
+	all_graphs.append(g5)
+	all_graphs.append(g6)
+	all_graphs.append(g7)
+	all_graphs.append(g8)
+	all_graphs.append(g9)
 
+	times = []
+	teams = []
+	for each_list in all_graphs:
+		sol_times = []
+		min_teams = []
+		for graph in each_list:
+			s = time.time()
+			t = find_min_teams(graph)
+			e = time.time() - s
+			sol_times.append(e)
+			min_teams.append(t)
+		times.append(sol_times)
+		teams.append(min_teams)
+	print(times)
+	print(temas)
 
+run_experiment()
+# g = rand_graph(200,0.8)
+# print(g)
+# find_min_teams(g)
 
-g = rand_graph(100,0.5)
-find_min_teams(g)
 
 

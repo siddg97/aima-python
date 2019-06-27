@@ -214,4 +214,4 @@ def make_experiment_sheet(t=20):
 	print('DATA RECORDED IN "a3_q1.xlsx" IN THE ROOT DIRECTORY <<<')
 
 
-print(make_queen_sat(10))
+# make_experiment_sheet(20)
