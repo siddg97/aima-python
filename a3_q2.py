@@ -196,6 +196,8 @@ def find_min_teams(graph):
 			continue
 		
 def run_experiment():
+	""" runs the experiment for n=200 and p belongs to {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9} 
+	for the experiment as described in assignment description"""
 	g1 = [rand_graph(200,0.1)]*5
 	g2 = [rand_graph(200,0.2)]*5
 	g3 = [rand_graph(200,0.3)]*5
