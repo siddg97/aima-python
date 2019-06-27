@@ -195,18 +195,18 @@ def find_min_teams(graph):
 			print('k=' + str(k) + ' runs minisat for too long and we consider that it is an UNSAT instance\n')
 			continue
 		
-def run_experiment():
-	""" runs the experiment for n=200 and p belongs to {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9} 
+def run_experiment(n):
+	""" runs the experiment for n nodes and p belongs to {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9} 
 	for the experiment as described in assignment description"""
-	g1 = [rand_graph(200,0.1)]*5
-	g2 = [rand_graph(200,0.2)]*5
-	g3 = [rand_graph(200,0.3)]*5
-	g4 = [rand_graph(200,0.4)]*5
-	g5 = [rand_graph(200,0.5)]*5
-	g6 = [rand_graph(200,0.6)]*5
-	g7 = [rand_graph(200,0.7)]*5
-	g8 = [rand_graph(200,0.8)]*5
-	g9 = [rand_graph(200,0.9)]*5
+	g1 = [rand_graph(n,0.1),rand_graph(n,0.1),rand_graph(n,0.1),rand_graph(n,0.1),rand_graph(n,0.1)]
+	g2 = [rand_graph(n,0.2),rand_graph(n,0.2),rand_graph(n,0.2),rand_graph(n,0.2),rand_graph(n,0.2)]
+	g3 = [rand_graph(n,0.3),rand_graph(n,0.3),rand_graph(n,0.3),rand_graph(n,0.3),rand_graph(n,0.3)]
+	g4 = [rand_graph(n,0.4),rand_graph(n,0.4),rand_graph(n,0.4),rand_graph(n,0.4),rand_graph(n,0.4)]
+	g5 = [rand_graph(n,0.5),rand_graph(n,0.5),rand_graph(n,0.5),rand_graph(n,0.5),rand_graph(n,0.5)]
+	g6 = [rand_graph(n,0.6),rand_graph(n,0.6),rand_graph(n,0.6),rand_graph(n,0.6),rand_graph(n,0.6)]
+	g7 = [rand_graph(n,0.7),rand_graph(n,0.7),rand_graph(n,0.7),rand_graph(n,0.7),rand_graph(n,0.7)]
+	g8 = [rand_graph(n,0.8),rand_graph(n,0.8),rand_graph(n,0.8),rand_graph(n,0.8),rand_graph(n,0.8)]
+	g9 = [rand_graph(n,0.9),rand_graph(n,0.9),rand_graph(n,0.9),rand_graph(n,0.9),rand_graph(n,0.9)]
 	all_graphs = []
 	all_graphs.append(g1)
 	all_graphs.append(g2)
@@ -232,9 +232,28 @@ def run_experiment():
 		times.append(sol_times)
 		teams.append(min_teams)
 	print(times)
-	print(temas)
+	print(teams)
+	
+	def list_avg(l):
+		return sum(l)/len(l)
 
-run_experiment()
+	a_times = map(list_avg,times)
+	a_teams = map(list_avg,teams)
+	print('\n\n')
+	for each in times:
+		print(each)
+	print('\n\n')
+	for each in teams:
+		print(each)
+	print('\n\n')
+	for each in a_times:
+		print(each)
+	print('\n\n')
+	for each in a_teams:
+		print(each)
+
+
+run_experiment(150)
 # g = rand_graph(200,0.8)
 # print(g)
 # find_min_teams(g)

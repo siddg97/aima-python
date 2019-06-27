@@ -1,3 +1,9 @@
+# +---------------------[ ASSIGNMENT 3: Question 1 ]--------------
+# | Author: Siddharth Gupta
+# | SFUID: 301327469
+# | 
+# | 
+
 import os
 import time
 import math
