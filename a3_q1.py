@@ -1,13 +1,18 @@
-# +---------------------[ ASSIGNMENT 3: Question 1 ]--------------
-# | Author: Siddharth Gupta
-# | SFUID: 301327469
-# | 
-# | 
+# +---------------------[ ASSIGNMENT 3: Question 1 ]----------------------------------------------------+
+# | Author: Siddharth Gupta																				|
+# | SFUID: 301327469																					|
+# | 																									|
+# | - CITATIONS:																						|
+# | 	+ Python3 Documentation: [ https://docs.python.org/3/ ]											|
+# |     + Minisat Documentation: [ http://minisat.se/ ]													|
+# |		+ Openpyxl Module for writing a raw excel sheet : [ https://openpyxl.readthedocs.io/en/stable/ ]|
+# +-----------------------------------------------------------------------------------------------------+
 
 import os
 import time
 import math
 import openpyxl
+
 
 def make_constraints(l,type='atmost_one'):
 	"""	generate a string of constraints for the list l which can be a row or column or a diagonal of a n-queens problem.

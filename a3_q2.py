@@ -1,5 +1,14 @@
+# +---------------------[ ASSIGNMENT 3: Question 2 ]----------------------------------------------------+
+# | Author: Siddharth Gupta																				|
+# | SFUID: 301327469																					|
+# | 																									|
+# | - CITATIONS:																						|
+# | 	+ Python3 Documentation: [ https://docs.python.org/3/ ]											|
+# |     + Minisat Documentation: [ http://minisat.se/ ]													|
+# |     + Constraint Formulation : [ https://www.cs.cmu.edu/~emc/15-820A/assignments/solution1.pdf ] 	|
+# +-----------------------------------------------------------------------------------------------------+
+
 import math
-import os
 import time
 import random
 import subprocess
@@ -172,7 +181,6 @@ def run_minisat():
 	except:
 		return False
 	return True
-	#os.system('minisat sat2.txt out2')
 
 def find_min_teams(graph):
 	""" finds the min number of teams that are required 
@@ -231,8 +239,6 @@ def run_experiment(n):
 			min_teams.append(t)
 		times.append(sol_times)
 		teams.append(min_teams)
-	print(times)
-	print(teams)
 	
 	def list_avg(l):
 		return sum(l)/len(l)
@@ -253,10 +259,8 @@ def run_experiment(n):
 		print(each)
 
 
-run_experiment(150)
-# g = rand_graph(200,0.8)
-# print(g)
-# find_min_teams(g)
+run_experiment(50)
+
 
 
 
