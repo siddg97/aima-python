@@ -29,16 +29,20 @@ class Tictactoe:
 
 	def playAsHuman(self,human):
 		while True:
-			h_move = int(input('\x1b[6;30;42m'+'Your next move at?'+'\x1b[0m '))
-			if h_move in self.nextMoves:
+			h_move = input('\x1b[6;30;42m'+'Your next move at?'+'\x1b[0m ')
+			try:
+				moveNum = int(h_move)
+			except:
+				h_move = input('\x1b[6;30;42m Please enter a number!\x1b[0m')
+			if int(h_move) in self.nextMoves:
 				break
 			else:
 				print("Invalid move! try again!")
-		self.applyMove(h_move,human)
+		self.applyMove(int(h_move),human)
 
-	def playAsComputer(self,computer,playouts=150):
+	def playAsComputer(self,computer,playouts=2000):
 		print("\x1b[6;30;44m I am calculating my next step to defeat you.....\x1b[0m\n")
-		time.sleep(2)
+		time.sleep(1)
 		board = deepcopy(self.board)
 		moves = deepcopy(self.nextMoves)
 		human = 'o' if computer=='x' else 'x'
@@ -53,9 +57,9 @@ class Tictactoe:
 					l+=1
 				else:
 					d+=1
-			scores.append(w+d)
+			scores.append(w+d-l)
 		nextMoveIndex = scores.index(max(scores))
-		self.applyMove(moves[nextMoveIndex],computer)		
+		self.applyMove(self.nextMoves[nextMoveIndex],computer)	
 
 
 	def outcome(self):
@@ -66,18 +70,18 @@ class Tictactoe:
 				+ 'False' -> game not finished
 		"""
 		state = self.board
-		if (state[0]==state[4] and state[4]==state[8] and state[0] != ' ') or (state[2]==state[4] and state[4]==state[6] and state[2] != ' '):
+		if (state[0]==state[4] and state[4]==state[8] and state[0] != ' ') or (state[2]==state[4] and state[4]==state[6] and state[4] != ' '):
 			return state[4]
 		else:
 			# check for rows
 			for i in range(0,9,3):
-				if state[i]==state[i+1] and state[i+1]==state[i+2] and state[i] != ' ':
-					return state[i]
+				if state[i]==state[i+1] and state[i+1]==state[i+2] and state[i+1] != ' ':
+					return state[i+1]
 			# check for columns
 			for i in range(0,3):
-				if state[i]==state[i+3] and state[i+3]==state[i+6] and state[i] != ' ':
-					return state[i]
-			if ' ' not in self.board:
+				if state[i]==state[i+3] and state[i+3]==state[i+6] and state[i+3] != ' ':
+					return state[i+3]
+			if len(self.nextMoves)==0:
 				return 'D'
 			else:
 				return False
@@ -98,16 +102,20 @@ def random_playout(board,move,computer,human):
 	t.board = new
 	t.nextMoves = getLegalMoves(t.board)
 	turn = False 	# false -> simulated human turn; true -> computer turn
-	while t.outcome() == False:
+	while True:
+		if len(t.nextMoves)==0:
+			return 'DRAW'
 		nextmove = random_move(t.nextMoves)
 		t.applyMove(nextmove,computer if turn else human)
 		turn = not turn
-	if t.outcome()==human:
-		return 'LOSS'
-	elif t.outcome()==computer:
-		return 'WIN'
-	else:
-		return 'DRAW'
+		if t.outcome()==human:
+			return 'LOSS'
+		elif t.outcome()==computer:
+			return 'WIN'
+		elif t.outcome()=='D':
+			return 'DRAW'
+		else:
+			continue
 
 def play_game():
 	s = ['.']*9
@@ -115,35 +123,50 @@ def play_game():
 	print('\x1b[7;30;44m WELCOME TO TIC-TAC-TOE!                                                         \x1b[0m')
 	print('\x1b[2;30;45m This program is going to give you a run for your money!                         \x1b[0m')
 	print('\x1b[6;30;41m It is IMPOSSIBLE to beat this program at tic-tac-toe. Best of luck (you need it)\x1b[0m')
-	print('\x1b[0;30;43m Out of fairness you get the first move!                                         \x1b[0m')
 	human = input('\x1b[6;30;47m What token would you like to be x or o?\x1b[0m'+' ').lower()
 	if human=='x':
 		program = 'o'
 	else:
 		program = 'x'
-	while t.outcome()==False:
-		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
-		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
-		print('\x1b[6;30;41m YOUR TURN HUMAN \x1b[0m')
-		t.display()
-		print('\x1b[6;30;42mYour next possible move can be one of the following tiles: \x1b[0m\n\x1b[1;31;40m  '+str(t.nextMoves)+'  \x1b[0m')
-		t.playAsHuman(human)
-		if len(t.nextMoves) == 0:
-			break
+	finalstr = '\x1b[5;30;41m GAME OVER!'
+	while True:
 		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
 		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
 		print('\x1b[6;30;44m IT IS MY TURN \x1b[0m')
 		t.display()
 		t.playAsComputer(program)
-		if len(t.nextMoves) == 0:
+		if t.outcome() == human:
+			finalstr += ' YOU WIN!'
 			break
-	finalstr = '\x1b[5;30;41m GAME OVER!'
-	if t.outcome() == human:
-		finalstr += ' YOU WIN!'
-	elif t.outcome() == program:
-		finalstr += ' I WIN! '
-	else:
-		finalstr += ' IT IS A TIE!'
+		elif t.outcome() == program:
+			finalstr += ' I WIN! '
+			break
+		elif t.outcome == 'D':
+			finalstr += ' IT IS A TIE!'
+			break
+		elif len(t.nextMoves)==0:
+			finalstr += ' IT IS A TIE!'
+			break
+		else:
+			print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
+			print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
+			print('\x1b[6;30;41m YOUR TURN HUMAN \x1b[0m')
+			t.display()
+			print('\x1b[6;30;42mYour next possible move can be one of the following tiles: \x1b[0m\n\x1b[1;31;40m  '+str(t.nextMoves)+'  \x1b[0m')
+			t.playAsHuman(human)
+			if t.outcome() == human:
+				finalstr += ' YOU WIN!'
+				break
+			elif t.outcome() == program:
+				finalstr += ' I WIN! '
+				break
+			elif t.outcome == 'D':
+				finalstr += ' IT IS A TIE!'
+				break
+			elif len(t.nextMoves)==0:
+				finalstr += ' IT IS A TIE!'
+				break
+	print('\n')
 	t.display()
 	print(finalstr+'\x1b[0m')
 
