@@ -1,4 +1,5 @@
 import random
+import time
 from copy import deepcopy
 
 def getLegalMoves(board):
@@ -35,9 +36,9 @@ class Tictactoe:
 				print("Invalid move! try again!")
 		self.applyMove(h_move,human)
 
-#def random_playout(board,move,computer,human):
 	def playAsComputer(self,computer,playouts=150):
-		print("The computer is now playing.....\n")
+		print("\x1b[6;30;44m I am calculating my next step to defeat you.....\x1b[0m\n")
+		time.sleep(2)
 		board = deepcopy(self.board)
 		moves = deepcopy(self.nextMoves)
 		human = 'o' if computer=='x' else 'x'
@@ -52,7 +53,7 @@ class Tictactoe:
 					l+=1
 				else:
 					d+=1
-			scores.append(w+d)
+			scores.append(w)
 		nextMoveIndex = scores.index(max(scores))
 		self.applyMove(moves[nextMoveIndex],computer)		
 
@@ -100,7 +101,6 @@ def random_playout(board,move,computer,human):
 	while t.outcome() == False:
 		nextmove = random_move(t.nextMoves)
 		t.applyMove(nextmove,computer if turn else human)
-
 		turn = not turn
 	if t.outcome()==human:
 		return 'LOSS'
@@ -109,62 +109,50 @@ def random_playout(board,move,computer,human):
 	else:
 		return 'DRAW'
 
-
 def play_game():
 	s = ['.']*9
 	t = Tictactoe()
 	print('\x1b[7;30;44m WELCOME TO TIC-TAC-TOE!                                                         \x1b[0m')
 	print('\x1b[2;30;45m This program is going to give you a run for your money!                         \x1b[0m')
 	print('\x1b[6;30;41m It is IMPOSSIBLE to beat this program at tic-tac-toe. Best of luck (you need it)\x1b[0m')
-
-	human = input('\x1b[6;30;42m What token would you like to be x or o?\x1b[0m'+' ').lower()
-	print('\n')
+	print('\x1b[0;30;43m Out of fairness you get the first move!                                         \x1b[0m')
+	human = input('\x1b[6;30;47m What token would you like to be x or o?\x1b[0m'+' ').lower()
 	if human=='x':
 		program = 'o'
 	else:
 		program = 'x'
 	while t.outcome()==False:
-		t.display()
 		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
 		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
-		print('\x1b[6;30;47mYour next possible move can be one of the following tiles:\x1b[0m\n\x1b[1;31;40m          '+str(t.nextMoves)+'                     \x1b[0m')
+		print('\x1b[6;30;41m YOUR TURN HUMAN \x1b[0m')
+		t.display()
+		print('\x1b[6;30;42mYour next possible move can be one of the following tiles: \x1b[0m\n\x1b[1;31;40m  '+str(t.nextMoves)+'  \x1b[0m')
 		t.playAsHuman(human)
 		if len(t.nextMoves) == 0:
 			break
-		t.display()
 		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
 		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
-		print('\n COMPUTERS TURN:')
+		print('\x1b[6;30;44m IT IS MY TURN \x1b[0m')
+		t.display()
 		t.playAsComputer(program)
 		if len(t.nextMoves) == 0:
 			break
-	finalstr = 'GAME OVER!'
+	finalstr = '\x1b[5;30;41m GAME OVER!'
 	if t.outcome() == human:
-		finalstr += ' HUMAN HAS WON!'
+		finalstr += ' YOU WIN!'
 	elif t.outcome() == program:
-		finalstr += ' COMPUTER HAS WON!'
+		finalstr += ' I WIN! '
 	else:
 		finalstr += ' IT IS A TIE!'
 	t.display()
-	print(finalstr)
+	print(finalstr+'\x1b[0m')
 
+if __name__=='__main__':
+	while True:
+		play_game()
+		h = input('\x1b[1;31;40m Would like to challenge me again?? [y/n] \x1b[0m').lower()
+		if h=='n':
+			break
+		else:
+			print('\n\n')
 
-# t=Tictactoe()
-# t.applyMove(1,'o')
-# # t.playAsComputer('x')
-# t.display()
-# board = deepcopy(t.board)
-# moves = deepcopy(t.nextMoves)
-# for each in moves:
-# 	print('\nFOR LEGAL MOVE '+str(each))
-# 	random_playout(board,each,'x','o')
-# 	print('\n')
-# 	t.display()
-
-play_game()
-# t = Tictactoe()
-# t.display()
-# print(t.board)
-# t.applyMove(1,'x')
-# print(t.board)
-# print(t.nextMoves)
