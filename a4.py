@@ -1,3 +1,6 @@
+import random
+from copy import deepcopy
+
 def getLegalMoves(board):
 	""" returns a list of all possible legal moves based on the given state """
 	moves = []
@@ -6,7 +9,7 @@ def getLegalMoves(board):
 			moves.append(i+1)
 	return moves
 
-class tictactoe:
+class Tictactoe:
 	def __init__(self):
 		self.board = [' ']*9
 		self.nextMoves = [1,2,3,4,5,6,7,8,9]
@@ -25,16 +28,34 @@ class tictactoe:
 
 	def playAsHuman(self,human):
 		while True:
-			h_move = int(input('\x1b[6;30;42m'+'Your next move at?'+'\x1b[0m'))
+			h_move = int(input('\x1b[6;30;42m'+'Your next move at?'+'\x1b[0m '))
 			if h_move in self.nextMoves:
 				break
 			else:
 				print("Invalid move! try again!")
 		self.applyMove(h_move,human)
 
-	def playAsComputer(self,computer):
-		c_move = int(input('\x1b[6;30;42m'+'computers next move at?'+'\x1b[0m'))
-		self.applyMove(c_move,computer)
+#def random_playout(board,move,computer,human):
+	def playAsComputer(self,computer,playouts=150):
+		print("The computer is now playing.....\n")
+		board = deepcopy(self.board)
+		moves = deepcopy(self.nextMoves)
+		human = 'o' if computer=='x' else 'x'
+		scores = []
+		for each in moves:
+			w,l,d = 0,0,0
+			for i in range(playouts):
+				c=random_playout(board,each,computer,human)
+				if c=='WIN':
+					w+=1
+				elif c=='LOSS':
+					l+=1
+				else:
+					d+=1
+			scores.append(w+d)
+		nextMoveIndex = scores.index(max(scores))
+		self.applyMove(moves[nextMoveIndex],computer)		
+
 
 	def outcome(self):
 		""" Returns a 'x' or 'o' or 'D'
@@ -60,10 +81,43 @@ class tictactoe:
 			else:
 				return False
 
+def random_move(moves):
+	return random.choice(moves)
+
+def random_playout(board,move,computer,human):
+	""" takes in a board, next legal move, computers token and humans token.
+			OUTPUT:
+			 + 'WIN'  - computer won
+			 + 'LOSS' - computer lost
+			 + 'DRAW' - tie
+	"""
+	new = deepcopy(board)
+	new[move-1] = computer
+	t = Tictactoe()
+	t.board = new
+	t.nextMoves = getLegalMoves(t.board)
+	turn = False 	# false -> simulated human turn; true -> computer turn
+	while t.outcome() == False:
+		nextmove = random_move(t.nextMoves)
+		t.applyMove(nextmove,computer if turn else human)
+
+		turn = not turn
+	if t.outcome()==human:
+		return 'LOSS'
+	elif t.outcome()==computer:
+		return 'WIN'
+	else:
+		return 'DRAW'
+
+
 def play_game():
 	s = ['.']*9
-	t = tictactoe()
-	human = input('What token would you like to be [X or O]? ').lower()
+	t = Tictactoe()
+	print('\x1b[7;30;44m WELCOME TO TIC-TAC-TOE!                                                         \x1b[0m')
+	print('\x1b[2;30;45m This program is going to give you a run for your money!                         \x1b[0m')
+	print('\x1b[6;30;41m It is IMPOSSIBLE to beat this program at tic-tac-toe. Best of luck (you need it)\x1b[0m')
+
+	human = input('\x1b[6;30;42m What token would you like to be x or o?\x1b[0m'+' ').lower()
 	print('\n')
 	if human=='x':
 		program = 'o'
@@ -73,7 +127,7 @@ def play_game():
 		t.display()
 		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
 		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
-		print('\x1b[6;30;47mYour next possible move can be one of the following tiles:\x1b[0m\n\x1b[1;31;40m'+str(t.nextMoves)+'\x1b[0m')
+		print('\x1b[6;30;47mYour next possible move can be one of the following tiles:\x1b[0m\n\x1b[1;31;40m          '+str(t.nextMoves)+'                     \x1b[0m')
 		t.playAsHuman(human)
 		if len(t.nextMoves) == 0:
 			break
@@ -95,8 +149,20 @@ def play_game():
 	print(finalstr)
 
 
+# t=Tictactoe()
+# t.applyMove(1,'o')
+# # t.playAsComputer('x')
+# t.display()
+# board = deepcopy(t.board)
+# moves = deepcopy(t.nextMoves)
+# for each in moves:
+# 	print('\nFOR LEGAL MOVE '+str(each))
+# 	random_playout(board,each,'x','o')
+# 	print('\n')
+# 	t.display()
+
 play_game()
-# t = tictactoe()
+# t = Tictactoe()
 # t.display()
 # print(t.board)
 # t.applyMove(1,'x')
