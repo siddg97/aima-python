@@ -53,7 +53,7 @@ class Tictactoe:
 					l+=1
 				else:
 					d+=1
-			scores.append(w)
+			scores.append(w+d)
 		nextMoveIndex = scores.index(max(scores))
 		self.applyMove(moves[nextMoveIndex],computer)		
 
@@ -155,4 +155,6 @@ if __name__=='__main__':
 			break
 		else:
 			print('\n\n')
+	# x = Tictactoe()
+	# random_playout(x.board,1,'x','o')
 
