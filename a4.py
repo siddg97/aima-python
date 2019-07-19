@@ -1,6 +1,15 @@
+# +---------------------[ ASSIGNMENT 4: PART 1 ]--------------------------------------------------------+
+# | Author: Siddharth Gupta																				|
+# | SFUID: 301327469																					|
+# | >>> USED 150 random playouts for each legal move to determine next move for the program <<<			|
+# | - CITATIONS:																						|
+# | 	+ Python3 Documentation: [ https://docs.python.org/3/ ]											|
+# +-----------------------------------------------------------------------------------------------------+
+
 import random
 import time
 from copy import deepcopy
+import os
 
 def getLegalMoves(board):
 	""" returns a list of all possible legal moves based on the given state """
@@ -40,9 +49,9 @@ class Tictactoe:
 				print("Invalid move! try again!")
 		self.applyMove(int(h_move),human)
 
-	def playAsComputer(self,computer,playouts=2000):
+	def playAsComputer(self,computer,playouts=100):
 		print("\x1b[6;30;44m I am calculating my next step to defeat you.....\x1b[0m\n")
-		time.sleep(1)
+		time.sleep(0.5)
 		board = deepcopy(self.board)
 		moves = deepcopy(self.nextMoves)
 		human = 'o' if computer=='x' else 'x'
@@ -59,7 +68,7 @@ class Tictactoe:
 					d+=1
 			scores.append(w+d-l)
 		nextMoveIndex = scores.index(max(scores))
-		self.applyMove(self.nextMoves[nextMoveIndex],computer)	
+		self.applyMove(self.nextMoves[nextMoveIndex],computer)
 
 
 	def outcome(self):
@@ -118,7 +127,6 @@ def random_playout(board,move,computer,human):
 			continue
 
 def play_game():
-	s = ['.']*9
 	t = Tictactoe()
 	print('\x1b[7;30;44m WELCOME TO TIC-TAC-TOE!                                                         \x1b[0m')
 	print('\x1b[2;30;45m This program is going to give you a run for your money!                         \x1b[0m')
@@ -133,7 +141,6 @@ def play_game():
 		print('\x1b[6;30;41m'+'Player  : '+human+' '+'\x1b[0m')
 		print('\x1b[6;30;44m'+'Computer: '+program+' '+'\x1b[0m\n')
 		print('\x1b[6;30;44m IT IS MY TURN \x1b[0m')
-		t.display()
 		t.playAsComputer(program)
 		if t.outcome() == human:
 			finalstr += ' YOU WIN!'
@@ -177,7 +184,5 @@ if __name__=='__main__':
 		if h=='n':
 			break
 		else:
-			print('\n\n')
-	# x = Tictactoe()
-	# random_playout(x.board,1,'x','o')
+			os.system('clear')
 
